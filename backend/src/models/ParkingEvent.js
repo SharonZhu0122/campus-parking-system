@@ -23,6 +23,10 @@ const ParkingEvent = sequelize.define('ParkingEvent', {
     type: DataTypes.DATE,
     allowNull: false,
   },
+  durationMinutes: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 });
 
 GateArea.hasMany(ParkingEvent, { foreignKey: 'gateAreaId' });
