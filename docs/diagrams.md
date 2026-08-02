@@ -7,7 +7,7 @@ These diagrams are written in Mermaid syntax. GitHub renders them automatically 
 ```mermaid
 flowchart TD
     FE["Frontend (React)<br/>gate view, admin, kiosk"]
-    FE <-->|"REST calls, JWT"| BE
+    FE -->|"REST calls, JWT"| API
 
     subgraph BE["Backend (Node.js / Express)"]
         API["API routes (JWT)"]
@@ -16,7 +16,7 @@ flowchart TD
         PS["Priority scorer"]
     end
 
-    BE <-->|Sequelize| DB[("MySQL database<br/>4 tables")]
+    API -->|Sequelize| DB[("MySQL database<br/>4 tables")]
     DG["Data generator<br/>creates fake events"] -->|writes events| DB
 ```
 
