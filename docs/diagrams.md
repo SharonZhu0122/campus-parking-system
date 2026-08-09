@@ -8,11 +8,7 @@ Numbers on the arrows show the order of a request: the frontend asks the backend
 
 ```mermaid
 flowchart TD
-    FE["Frontend (React)<br/>gate view, admin, kiosk<br/>hosted: Vercel / Netlify"]
-    FE -->|"1 request (REST, JWT)"| API
-    API -->|"4 response (JSON)"| FE
-
-    subgraph BE["Backend (Node.js / Express) — hosted: Render / Railway"]
+    subgraph BE["Backend, Node.js and Express, hosted on Render or Railway"]
         API["API routes (JWT)"]
         RE["Rule engine"]
         PR["Predictions"]
@@ -23,10 +19,16 @@ flowchart TD
         PR --> PS
     end
 
-    API -->|"2 query (Sequelize)"| DB[("MySQL database<br/>4 tables<br/>hosted: Railway / Aiven")]
+    FE["Frontend, React, gate view and admin and kiosk, hosted on Vercel or Netlify"]
+    FE -->|"1 request, REST, JWT"| API
+    API -->|"4 response, JSON"| FE
+
+    DB[("MySQL database, 4 tables, hosted on Railway or Aiven")]
+    API -->|"2 query, Sequelize"| DB
     DB -->|"3 rows"| API
 
-    DG["Data generator<br/>runs on a schedule"] -->|writes events| DB
+    DG["Data generator, runs on a schedule"]
+    DG -->|"writes events"| DB
 ```
 
 ## 2. Rule engine flowchart
