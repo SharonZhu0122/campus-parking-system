@@ -6,30 +6,9 @@ These diagrams are written in Mermaid syntax. GitHub renders them automatically 
 
 Numbers on the arrows show the order of a request: the frontend asks the backend for data (1), the backend queries the database (2), the database returns rows (3), and the backend sends the result back to the frontend (4). Each box also lists where it runs once deployed.
 
-```mermaid
-flowchart TD
-    subgraph BE["Backend, Node.js and Express, hosted on Render or Railway"]
-        API["API routes (JWT)"]
-        RE["Rule engine"]
-        PR["Predictions"]
-        PS["Priority scorer"]
-        API --> RE
-        API --> PR
-        RE --> PS
-        PR --> PS
-    end
+This one is a drawn SVG file instead of Mermaid. The two-way arrows (request/response, query/rows) form a cycle between the same pair of boxes, and Mermaid's automatic layout does not place cyclic nodes well — it pushed boxes sideways and crossed the arrow labels. Drawing it directly gives full control over the layout.
 
-    FE["Frontend, React, gate view and admin and kiosk, hosted on Vercel or Netlify"]
-    FE -->|"1 request, REST, JWT"| API
-    API -->|"4 response, JSON"| FE
-
-    DB[("MySQL database, 4 tables, hosted on Railway or Aiven")]
-    API -->|"2 query, Sequelize"| DB
-    DB -->|"3 rows"| API
-
-    DG["Data generator, runs on a schedule"]
-    DG -->|"writes events"| DB
-```
+![System architecture diagram](./architecture-diagram.svg)
 
 ## 2. Rule engine flowchart
 
