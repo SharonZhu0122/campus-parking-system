@@ -2,35 +2,34 @@
 
 These diagrams are written in Mermaid syntax. GitHub renders them automatically when this file is viewed in the repository.
 
-## 1. System architecture diagram
+## 1. System architecture diagram (includes deployment)
+
+Numbers on the arrows show the order of a request: the frontend asks the backend for data (1), the backend queries the database (2), the database returns rows (3), and the backend sends the result back to the frontend (4). Each box also lists where it runs once deployed.
 
 ```mermaid
 flowchart TD
-    FE["Frontend (React)<br/>gate view, admin, kiosk"]
-    FE -->|"REST calls, JWT"| API
+    FE["Frontend (React)<br/>gate view, admin, kiosk<br/>hosted: Vercel / Netlify"]
+    FE -->|"1 request (REST, JWT)"| API
+    API -->|"4 response (JSON)"| FE
 
-    subgraph BE["Backend (Node.js / Express)"]
+    subgraph BE["Backend (Node.js / Express) — hosted: Render / Railway"]
         API["API routes (JWT)"]
         RE["Rule engine"]
         PR["Predictions"]
         PS["Priority scorer"]
+        API --> RE
+        API --> PR
+        RE --> PS
+        PR --> PS
     end
 
-    API -->|Sequelize| DB[("MySQL database<br/>4 tables")]
-    DG["Data generator<br/>creates fake events"] -->|writes events| DB
+    API -->|"2 query (Sequelize)"| DB[("MySQL database<br/>4 tables<br/>hosted: Railway / Aiven")]
+    DB -->|"3 rows"| API
+
+    DG["Data generator<br/>runs on a schedule"] -->|writes events| DB
 ```
 
-## 2. Deployment diagram
-
-```mermaid
-flowchart TD
-    Browser["User's browser<br/>desktop or mobile"]
-    Browser -->|loads app| FEHost["Vercel / Netlify<br/>hosts frontend"]
-    Browser -->|"API calls (HTTPS)"| BEHost["Render / Railway<br/>hosts backend"]
-    BEHost -->|DB connection| DBHost["Railway / Aiven<br/>hosts MySQL database"]
-```
-
-## 3. Rule engine flowchart
+## 2. Rule engine flowchart
 
 ```mermaid
 flowchart TD
@@ -43,7 +42,7 @@ flowchart TD
     D3 -->|No| E(["No violation"])
 ```
 
-## 4. Data generator flowchart
+## 3. Data generator flowchart
 
 ```mermaid
 flowchart TD
