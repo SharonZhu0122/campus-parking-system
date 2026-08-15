@@ -98,7 +98,9 @@ async function runGeneratorTick() {
 
 function startDataGenerator() {
   cron.schedule('*/2 * * * *', () => {
-    runGeneratorTick().catch((err) => console.error('Data generator error:', err));
+    runGeneratorTick()
+      .then((results) => console.log(`[generator tick] created ${results.length} event(s) at ${new Date().toISOString()}`))
+      .catch((err) => console.error('Data generator error:', err));
   });
   console.log('Data generator started (runs every 2 minutes)');
 }
