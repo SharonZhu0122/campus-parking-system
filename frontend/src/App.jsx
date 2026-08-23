@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
+import OccupancyPage from './OccupancyPage';
 import './App.css';
 
 function App() {
@@ -9,12 +10,7 @@ function App() {
   const [registeredUsername, setRegisteredUsername] = useState('');
 
   if (loggedInUser) {
-    return (
-      <div className="welcome-page">
-        <h1>Welcome, {loggedInUser}</h1>
-        <p>Gate occupancy page coming next.</p>
-      </div>
-    );
+    return <OccupancyPage username={loggedInUser} />;
   }
 
   if (view === 'register') {

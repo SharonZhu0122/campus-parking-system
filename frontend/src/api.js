@@ -14,6 +14,22 @@ export async function login(username, password) {
   return data;
 }
 
+export async function getGates() {
+  const response = await fetch(`${API_BASE}/api/gates`);
+  if (!response.ok) {
+    throw new Error('Could not load gate list');
+  }
+  return response.json();
+}
+
+export async function getGateOccupancy(gateId) {
+  const response = await fetch(`${API_BASE}/api/gates/${gateId}/occupancy`);
+  if (!response.ok) {
+    throw new Error('Could not load occupancy for this gate');
+  }
+  return response.json();
+}
+
 export async function register(username, password) {
   const response = await fetch(`${API_BASE}/api/register`, {
     method: 'POST',
