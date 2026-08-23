@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { login } from './api';
+import { register } from './api';
 
-function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername }) {
-  const [username, setUsername] = useState(registeredUsername || '');
+function RegisterPage({ onRegisterSuccess, onSwitchToLogin }) {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -12,9 +12,8 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername }) {
     setError('');
     setLoading(true);
     try {
-      const data = await login(username, password);
-      localStorage.setItem('token', data.token);
-      onLoginSuccess(username);
+      await register(username, password);
+      onRegisterSuccess(username);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -27,9 +26,9 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername }) {
       <h1>Campus Parking System</h1>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="field">
-          <label htmlFor="username">Username</label>
+          <label htmlFor="reg-username">Username</label>
           <input
-            id="username"
+            id="reg-username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -37,9 +36,9 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername }) {
           />
         </div>
         <div className="field">
-          <label htmlFor="password">Password</label>
+          <label htmlFor="reg-password">Password</label>
           <input
-            id="password"
+            id="reg-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -48,12 +47,12 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername }) {
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Log in'}
+          {loading ? 'Registering...' : 'Register'}
         </button>
         <p className="switch-link">
-          Don&apos;t have an account?{' '}
-          <button type="button" className="link-button" onClick={onSwitchToRegister}>
-            Register
+          Already have an account?{' '}
+          <button type="button" className="link-button" onClick={onSwitchToLogin}>
+            Log in
           </button>
         </p>
       </form>
@@ -61,4 +60,4 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername }) {
   );
 }
 
-export default LoginPage;
+export default RegisterPage;
