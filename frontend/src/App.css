@@ -98,6 +98,21 @@ body {
   margin: 0 0 4px;
 }
 
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.user-status {
+  font-size: 14px;
+  color: #444;
+  margin: 0;
+  white-space: nowrap;
+}
+
 .subtitle {
   color: #666;
   margin: 0 0 24px;

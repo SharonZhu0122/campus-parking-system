@@ -6,11 +6,20 @@ import './App.css';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null);
-  const [view, setView] = useState('login');
+  const [view, setView] = useState('occupancy');
   const [registeredUsername, setRegisteredUsername] = useState('');
 
-  if (loggedInUser) {
-    return <OccupancyPage username={loggedInUser} />;
+  if (view === 'login') {
+    return (
+      <LoginPage
+        onLoginSuccess={(username) => {
+          setLoggedInUser(username);
+          setView('occupancy');
+        }}
+        onSwitchToRegister={() => setView('register')}
+        registeredUsername={registeredUsername}
+      />
+    );
   }
 
   if (view === 'register') {
@@ -26,10 +35,9 @@ function App() {
   }
 
   return (
-    <LoginPage
-      onLoginSuccess={setLoggedInUser}
-      onSwitchToRegister={() => setView('register')}
-      registeredUsername={registeredUsername}
+    <OccupancyPage
+      username={loggedInUser}
+      onLoginClick={() => setView('login')}
     />
   );
 }

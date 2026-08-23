@@ -3,7 +3,7 @@ import { getGates, getGateOccupancy } from './api';
 
 const REFRESH_INTERVAL_MS = 5000;
 
-function OccupancyPage({ username }) {
+function OccupancyPage({ username, onLoginClick }) {
   const [gates, setGates] = useState([]);
   const [occupancyByGate, setOccupancyByGate] = useState({});
   const [error, setError] = useState('');
@@ -37,10 +37,19 @@ function OccupancyPage({ username }) {
 
   return (
     <div className="occupancy-page">
-      <h1>Gate Occupancy</h1>
-      <p className="subtitle">
-        Logged in as {username}. Updates every {REFRESH_INTERVAL_MS / 1000} seconds.
-      </p>
+      <div className="header-row">
+        <div>
+          <h1>Gate Occupancy</h1>
+          <p className="subtitle">Updates every {REFRESH_INTERVAL_MS / 1000} seconds.</p>
+        </div>
+        {username ? (
+          <p className="user-status">Logged in as {username}</p>
+        ) : (
+          <button type="button" className="link-button" onClick={onLoginClick}>
+            Log in
+          </button>
+        )}
+      </div>
       {error && <p className="error">{error}</p>}
       <div className="gate-grid">
         {gates.map((gate) => {
