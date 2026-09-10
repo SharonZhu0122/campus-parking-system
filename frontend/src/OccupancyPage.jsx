@@ -4,7 +4,7 @@ import { getGates, getGateOccupancy } from './api';
 const REFRESH_INTERVAL_MS = 5000;
 
 function occupancyLevel(percent) {
-  if (percent >= 80) return 'high';
+  if (percent >= 90) return 'high';
   if (percent >= 50) return 'medium';
   return 'low';
 }
