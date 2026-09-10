@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { login } from './api';
 
-function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername }) {
+function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onBack }) {
   const [username, setUsername] = useState(registeredUsername || '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -24,6 +24,9 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername }) {
 
   return (
     <div className="login-page">
+      <button type="button" className="link-button back-link" onClick={onBack}>
+        &larr; Back to gate occupancy
+      </button>
       <h1>Campus Parking System</h1>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="field">

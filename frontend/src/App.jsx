@@ -18,6 +18,7 @@ function App() {
         }}
         onSwitchToRegister={() => setView('register')}
         registeredUsername={registeredUsername}
+        onBack={() => setView('occupancy')}
       />
     );
   }
@@ -30,6 +31,7 @@ function App() {
           setView('login');
         }}
         onSwitchToLogin={() => setView('login')}
+        onBack={() => setView('occupancy')}
       />
     );
   }
