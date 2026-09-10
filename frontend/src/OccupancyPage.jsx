@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getGates, getGateOccupancy } from './api';
 
 const REFRESH_INTERVAL_MS = 5000;
+const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
 
 function occupancyLevel(percent) {
   if (percent >= 90) return 'high';
@@ -13,11 +14,12 @@ function OccupancyPage({ username, onLoginClick }) {
   const [gates, setGates] = useState([]);
   const [occupancyByGate, setOccupancyByGate] = useState({});
   const [error, setError] = useState('');
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     getGates()
       .then(setGates)
-      .catch((err) => setError(err.message));
+      .catch(() => setError(FRIENDLY_ERROR));
   }, []);
 
   useEffect(() => {
@@ -31,8 +33,10 @@ function OccupancyPage({ username, onLoginClick }) {
           next[result.gateId] = result;
         });
         setOccupancyByGate(next);
-      } catch (err) {
-        setError(err.message);
+        setLastUpdated(new Date());
+        setError('');
+      } catch {
+        setError(FRIENDLY_ERROR);
       }
     }
 
@@ -57,9 +61,11 @@ function OccupancyPage({ username, onLoginClick }) {
       </header>
 
       <main className="page-content">
-        <h1>Gate Occupancy</h1>
+        <h1>Parking Availability</h1>
         <p className="subtitle">
-          Live parking availability across campus. Updates every {REFRESH_INTERVAL_MS / 1000} seconds.
+          {lastUpdated
+            ? `Last updated at ${lastUpdated.toLocaleTimeString()}`
+            : 'Loading current availability...'}
         </p>
         {error && <p className="error">{error}</p>}
         <div className="gate-grid">
@@ -67,12 +73,14 @@ function OccupancyPage({ username, onLoginClick }) {
             const occupancy = occupancyByGate[gate.id];
             const percent = occupancy ? occupancy.occupancyPercent : 0;
             const level = occupancyLevel(percent);
+            const available = occupancy ? occupancy.totalParks - occupancy.occupied : null;
             return (
               <div key={gate.id} className="gate-card">
                 <span className="gate-label">{gate.name}</span>
                 {occupancy ? (
                   <>
-                    <span className={`occupancy-percent level-${level}`}>{percent}%</span>
+                    <span className={`occupancy-percent level-${level}`}>{available}</span>
+                    <span className="available-label">spaces available</span>
                     <div className="occupancy-bar">
                       <div
                         className={`occupancy-bar-fill level-${level}`}
@@ -80,7 +88,7 @@ function OccupancyPage({ username, onLoginClick }) {
                       />
                     </div>
                     <span className="occupancy-detail">
-                      {occupancy.occupied} / {occupancy.totalParks} parks occupied
+                      {occupancy.occupied} / {occupancy.totalParks} occupied
                     </span>
                   </>
                 ) : (
