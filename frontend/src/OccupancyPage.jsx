@@ -3,6 +3,12 @@ import { getGates, getGateOccupancy } from './api';
 
 const REFRESH_INTERVAL_MS = 5000;
 
+function occupancyLevel(percent) {
+  if (percent >= 80) return 'high';
+  if (percent >= 50) return 'medium';
+  return 'low';
+}
+
 function OccupancyPage({ username, onLoginClick }) {
   const [gates, setGates] = useState([]);
   const [occupancyByGate, setOccupancyByGate] = useState({});
@@ -37,40 +43,54 @@ function OccupancyPage({ username, onLoginClick }) {
 
   return (
     <div className="occupancy-page">
-      <div className="header-row">
-        <div>
-          <h1>Gate Occupancy</h1>
-          <p className="subtitle">Updates every {REFRESH_INTERVAL_MS / 1000} seconds.</p>
+      <header className="top-bar">
+        <div className="top-bar-inner">
+          <span className="brand-mark">University of Waikato &middot; Parking</span>
+          {username ? (
+            <span className="user-status">Logged in as {username}</span>
+          ) : (
+            <button type="button" className="top-bar-link" onClick={onLoginClick}>
+              Log in
+            </button>
+          )}
         </div>
-        {username ? (
-          <p className="user-status">Logged in as {username}</p>
-        ) : (
-          <button type="button" className="link-button" onClick={onLoginClick}>
-            Log in
-          </button>
-        )}
-      </div>
-      {error && <p className="error">{error}</p>}
-      <div className="gate-grid">
-        {gates.map((gate) => {
-          const occupancy = occupancyByGate[gate.id];
-          return (
-            <div key={gate.id} className="gate-card">
-              <h2>{gate.name}</h2>
-              {occupancy ? (
-                <>
-                  <p className="occupancy-percent">{occupancy.occupancyPercent}%</p>
-                  <p className="occupancy-detail">
-                    {occupancy.occupied} / {occupancy.totalParks} parks occupied
-                  </p>
-                </>
-              ) : (
-                <p className="occupancy-detail">Loading...</p>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      </header>
+
+      <main className="page-content">
+        <h1>Gate Occupancy</h1>
+        <p className="subtitle">
+          Live parking availability across campus. Updates every {REFRESH_INTERVAL_MS / 1000} seconds.
+        </p>
+        {error && <p className="error">{error}</p>}
+        <div className="gate-grid">
+          {gates.map((gate) => {
+            const occupancy = occupancyByGate[gate.id];
+            const percent = occupancy ? occupancy.occupancyPercent : 0;
+            const level = occupancyLevel(percent);
+            return (
+              <div key={gate.id} className="gate-card">
+                <span className="gate-label">{gate.name}</span>
+                {occupancy ? (
+                  <>
+                    <span className={`occupancy-percent level-${level}`}>{percent}%</span>
+                    <div className="occupancy-bar">
+                      <div
+                        className={`occupancy-bar-fill level-${level}`}
+                        style={{ width: `${Math.min(percent, 100)}%` }}
+                      />
+                    </div>
+                    <span className="occupancy-detail">
+                      {occupancy.occupied} / {occupancy.totalParks} parks occupied
+                    </span>
+                  </>
+                ) : (
+                  <span className="occupancy-detail">Loading...</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </main>
     </div>
   );
 }

@@ -5,6 +5,11 @@
   --waikato-dark-grey: #353535;
   --waikato-blue-grey: #32373d;
   --waikato-light-grey: #f2f2f2;
+  --level-low: #2f7d4f;
+  --level-medium: #c67c00;
+  --level-high: var(--waikato-red);
+  --font-display: 'Libre Franklin', system-ui, sans-serif;
+  --font-body: 'Source Sans 3', system-ui, sans-serif;
 }
 
 * {
@@ -13,10 +18,12 @@
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: var(--font-body);
   background: var(--waikato-light-grey);
   color: var(--waikato-dark-grey);
 }
+
+/* ---------- Login / Register ---------- */
 
 .login-page,
 .welcome-page {
@@ -36,21 +43,22 @@ body {
 }
 
 .login-page h1 {
+  font-family: var(--font-display);
   font-size: 28px;
+  font-weight: 800;
   line-height: 1.3;
   text-align: center;
   margin: 0 0 24px;
   max-width: 320px;
   color: var(--waikato-red);
-  font-weight: 700;
 }
 
 .login-form {
   background: #ffffff;
   padding: 32px;
-  border-radius: 4px;
+  border-radius: 6px;
   border-top: 4px solid var(--waikato-red);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 320px;
   display: flex;
@@ -61,20 +69,23 @@ body {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .field label {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--waikato-blue-grey);
 }
 
 .field input {
-  padding: 10px;
+  padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
+  font-family: var(--font-body);
 }
 
 .field input:focus {
@@ -84,13 +95,15 @@ body {
 }
 
 .login-form button[type='submit'] {
-  padding: 10px;
+  padding: 11px;
   border: none;
   border-radius: 4px;
   background: var(--waikato-red);
   color: white;
-  font-size: 16px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   cursor: pointer;
 }
 
@@ -127,75 +140,147 @@ body {
   font-weight: 600;
 }
 
+/* ---------- Occupancy page ---------- */
+
 .occupancy-page {
   min-height: 100vh;
-  padding: 32px 24px;
+}
+
+.top-bar {
+  background: var(--waikato-blue-grey);
+  padding: 0 24px;
+}
+
+.top-bar-inner {
   max-width: 960px;
   margin: 0 auto;
-}
-
-.occupancy-page h1 {
-  font-size: 32px;
-  line-height: 1.3;
-  margin: 0 0 4px;
-  color: var(--waikato-red);
-  font-weight: 700;
-}
-
-.header-row {
+  height: 56px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 3px solid var(--waikato-yellow);
+}
+
+.brand-mark {
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.top-bar-link {
+  background: none;
+  border: none;
+  color: var(--waikato-yellow);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0;
+  text-decoration: underline;
 }
 
 .user-status {
-  font-size: 14px;
-  color: var(--waikato-blue-grey);
+  font-size: 13px;
+  color: #ffffff;
   margin: 0;
   white-space: nowrap;
 }
 
+.page-content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px 48px;
+}
+
+.occupancy-page h1 {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 8px;
+  color: var(--waikato-red);
+}
+
 .subtitle {
   color: #666;
-  margin: 0;
-  font-size: 14px;
+  margin: 0 0 32px;
+  font-size: 15px;
 }
 
 .gate-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 }
 
 .gate-card {
   background: #ffffff;
-  border-radius: 4px;
-  border-top: 4px solid var(--waikato-yellow);
-  padding: 20px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.gate-card h2 {
-  margin: 0 0 12px;
-  font-size: 16px;
+.gate-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--waikato-blue-grey);
 }
 
 .occupancy-percent {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0;
-  color: var(--waikato-red);
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.occupancy-percent.level-low {
+  color: var(--level-low);
+}
+
+.occupancy-percent.level-medium {
+  color: var(--level-medium);
+}
+
+.occupancy-percent.level-high {
+  color: var(--level-high);
+}
+
+.occupancy-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--waikato-light-grey);
+  overflow: hidden;
+}
+
+.occupancy-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.occupancy-bar-fill.level-low {
+  background: var(--level-low);
+}
+
+.occupancy-bar-fill.level-medium {
+  background: var(--level-medium);
+}
+
+.occupancy-bar-fill.level-high {
+  background: var(--level-high);
 }
 
 .occupancy-detail {
-  margin: 4px 0 0;
+  margin: 0;
   color: #666;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 @media (max-width: 480px) {
@@ -211,12 +296,16 @@ body {
     padding: 24px;
   }
 
-  .occupancy-page {
-    padding: 20px 16px;
+  .page-content {
+    padding: 28px 16px 32px;
   }
 
-  .header-row {
-    flex-wrap: wrap;
+  .top-bar {
+    padding: 0 16px;
+  }
+
+  .brand-mark {
+    font-size: 12px;
   }
 
   .occupancy-page h1 {
