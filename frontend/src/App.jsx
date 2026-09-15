@@ -11,9 +11,10 @@ function App() {
   const [view, setView] = useState('occupancy');
   const [registeredUsername, setRegisteredUsername] = useState('');
 
-  if (view === 'login') {
+  if (view === 'login' || view === 'adminLogin') {
     return (
       <LoginPage
+        isAdmin={view === 'adminLogin'}
         onLoginSuccess={(username, role) => {
           setLoggedInUser(username);
           setLoggedInRole(role);
@@ -48,6 +49,7 @@ function App() {
       username={loggedInUser}
       role={loggedInRole}
       onLoginClick={() => setView('login')}
+      onAdminLoginClick={() => setView('adminLogin')}
       onAdminClick={() => setView('admin')}
       onLogout={() => {
         localStorage.removeItem('token');

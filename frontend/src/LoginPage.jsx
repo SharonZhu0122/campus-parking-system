@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { login } from './api';
 
-function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onBack }) {
+function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onBack, isAdmin }) {
   const [username, setUsername] = useState(registeredUsername || '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -23,11 +23,11 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onB
   }
 
   return (
-    <div className="login-page">
+    <div className={isAdmin ? 'login-page admin-login-page' : 'login-page'}>
       <button type="button" className="link-button back-link" onClick={onBack}>
         &larr; Back to gate occupancy
       </button>
-      <h1>Campus Parking System</h1>
+      <h1>{isAdmin ? 'Admin Login' : 'Campus Parking System'}</h1>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="field">
           <label htmlFor="username">Username</label>
@@ -53,12 +53,14 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onB
         <button type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Log in'}
         </button>
-        <p className="switch-link">
-          Don&apos;t have an account?{' '}
-          <button type="button" className="link-button" onClick={onSwitchToRegister}>
-            Register
-          </button>
-        </p>
+        {!isAdmin && (
+          <p className="switch-link">
+            Don&apos;t have an account?{' '}
+            <button type="button" className="link-button" onClick={onSwitchToRegister}>
+              Register
+            </button>
+          </p>
+        )}
       </form>
     </div>
   );

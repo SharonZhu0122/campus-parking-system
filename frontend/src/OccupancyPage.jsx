@@ -10,7 +10,7 @@ function occupancyLevel(percent) {
   return 'low';
 }
 
-function OccupancyPage({ username, role, onLoginClick, onAdminClick, onLogout }) {
+function OccupancyPage({ username, role, onLoginClick, onAdminLoginClick, onAdminClick, onLogout }) {
   const [gates, setGates] = useState([]);
   const [occupancyByGate, setOccupancyByGate] = useState({});
   const [error, setError] = useState('');
@@ -63,9 +63,14 @@ function OccupancyPage({ username, role, onLoginClick, onAdminClick, onLogout })
               </button>
             </span>
           ) : (
-            <button type="button" className="top-bar-link" onClick={onLoginClick}>
-              Log in
-            </button>
+            <span className="top-bar-actions">
+              <button type="button" className="top-bar-link" onClick={onLoginClick}>
+                Log in
+              </button>
+              <button type="button" className="top-bar-link admin-login-link" onClick={onAdminLoginClick}>
+                Admin login
+              </button>
+            </span>
           )}
         </div>
       </header>

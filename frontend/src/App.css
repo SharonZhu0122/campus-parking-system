@@ -53,6 +53,22 @@ body {
   color: var(--waikato-red);
 }
 
+.admin-login-page {
+  background: var(--waikato-blue-grey);
+}
+
+.admin-login-page h1 {
+  color: var(--waikato-yellow);
+}
+
+.admin-login-page .back-link {
+  color: var(--waikato-yellow);
+}
+
+.admin-login-page .login-form {
+  border-top-color: var(--waikato-yellow);
+}
+
 .login-form {
   background: #ffffff;
   padding: 32px;
@@ -192,6 +208,12 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.admin-login-link {
+  color: #9aa0a6 !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
 }
 
 .page-content {
