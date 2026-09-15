@@ -43,3 +43,29 @@ export async function register(username, password) {
   }
   return data;
 }
+
+function authHeaders() {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+export async function getViolations() {
+  const response = await fetch(`${API_BASE}/api/admin/violations`, {
+    headers: authHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error('Could not load violations');
+  }
+  return response.json();
+}
+
+export async function resolveViolation(id) {
+  const response = await fetch(`${API_BASE}/api/admin/violations/${id}/resolve`, {
+    method: 'PATCH',
+    headers: authHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error('Could not resolve this violation');
+  }
+  return response.json();
+}

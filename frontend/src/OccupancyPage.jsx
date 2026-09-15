@@ -10,7 +10,7 @@ function occupancyLevel(percent) {
   return 'low';
 }
 
-function OccupancyPage({ username, onLoginClick }) {
+function OccupancyPage({ username, role, onLoginClick, onAdminClick }) {
   const [gates, setGates] = useState([]);
   const [occupancyByGate, setOccupancyByGate] = useState({});
   const [error, setError] = useState('');
@@ -51,7 +51,14 @@ function OccupancyPage({ username, onLoginClick }) {
         <div className="top-bar-inner">
           <span className="brand-mark">University of Waikato &middot; Parking</span>
           {username ? (
-            <span className="user-status">Logged in as {username}</span>
+            <span className="top-bar-actions">
+              <span className="user-status">Logged in as {username}</span>
+              {role === 'admin' && (
+                <button type="button" className="top-bar-link" onClick={onAdminClick}>
+                  Admin
+                </button>
+              )}
+            </span>
           ) : (
             <button type="button" className="top-bar-link" onClick={onLoginClick}>
               Log in

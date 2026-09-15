@@ -14,7 +14,7 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onB
     try {
       const data = await login(username, password);
       localStorage.setItem('token', data.token);
-      onLoginSuccess(username);
+      onLoginSuccess(username, data.role);
     } catch (err) {
       setError(err.message);
     } finally {

@@ -2,18 +2,21 @@ import { useState } from 'react';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 import OccupancyPage from './OccupancyPage';
+import AdminPage from './AdminPage';
 import './App.css';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loggedInRole, setLoggedInRole] = useState(null);
   const [view, setView] = useState('occupancy');
   const [registeredUsername, setRegisteredUsername] = useState('');
 
   if (view === 'login') {
     return (
       <LoginPage
-        onLoginSuccess={(username) => {
+        onLoginSuccess={(username, role) => {
           setLoggedInUser(username);
+          setLoggedInRole(role);
           setView('occupancy');
         }}
         onSwitchToRegister={() => setView('register')}
@@ -36,10 +39,16 @@ function App() {
     );
   }
 
+  if (view === 'admin') {
+    return <AdminPage onBack={() => setView('occupancy')} />;
+  }
+
   return (
     <OccupancyPage
       username={loggedInUser}
+      role={loggedInRole}
       onLoginClick={() => setView('login')}
+      onAdminClick={() => setView('admin')}
     />
   );
 }
