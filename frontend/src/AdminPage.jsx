@@ -3,10 +3,17 @@ import { getViolations, resolveViolation } from './api';
 
 const DISPLAY_LIMIT = 100;
 
+const RESOLUTION_LABELS = {
+  ticket_issued: 'Ticket issued',
+  false_positive: 'False positive',
+  other: 'Other',
+};
+
 function AdminPage({ onBack }) {
   const [violations, setViolations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [pendingChoice, setPendingChoice] = useState({});
 
   useEffect(() => {
     getViolations()
@@ -21,9 +28,15 @@ function AdminPage({ onBack }) {
   }, []);
 
   async function handleResolve(id) {
+    const resolutionType = pendingChoice[id];
+    if (!resolutionType) {
+      setError('Choose how this was handled before resolving it.');
+      return;
+    }
     try {
-      await resolveViolation(id);
-      setViolations((prev) => prev.map((v) => (v.id === id ? { ...v, resolved: true } : v)));
+      const updated = await resolveViolation(id, resolutionType);
+      setViolations((prev) => prev.map((v) => (v.id === id ? { ...v, ...updated } : v)));
+      setError('');
     } catch (err) {
       setError(err.message);
     }
@@ -78,16 +91,43 @@ function AdminPage({ onBack }) {
                       <span className={`status-badge ${v.resolved ? 'resolved' : 'unresolved'}`}>
                         {v.resolved ? 'Resolved' : 'Open'}
                       </span>
+                      {v.resolved && (
+                        <div className="resolution-note">
+                          {v.resolvedBy ? (
+                            <>
+                              {RESOLUTION_LABELS[v.resolutionType] || v.resolutionType} by{' '}
+                              {v.resolvedBy}
+                              <br />
+                              {new Date(v.resolvedAt).toLocaleString()}
+                            </>
+                          ) : (
+                            'Resolved before this detail was tracked'
+                          )}
+                        </div>
+                      )}
                     </td>
                     <td>
                       {!v.resolved && (
-                        <button
-                          type="button"
-                          className="link-button"
-                          onClick={() => handleResolve(v.id)}
-                        >
-                          Mark resolved
-                        </button>
+                        <div className="resolve-action">
+                          <select
+                            value={pendingChoice[v.id] || ''}
+                            onChange={(e) =>
+                              setPendingChoice((prev) => ({ ...prev, [v.id]: e.target.value }))
+                            }
+                          >
+                            <option value="">Choose action...</option>
+                            <option value="ticket_issued">Ticket issued</option>
+                            <option value="false_positive">False positive</option>
+                            <option value="other">Other</option>
+                          </select>
+                          <button
+                            type="button"
+                            className="link-button"
+                            onClick={() => handleResolve(v.id)}
+                          >
+                            Resolve
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>

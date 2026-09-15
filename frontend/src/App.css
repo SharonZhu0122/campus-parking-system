@@ -386,6 +386,27 @@ body {
   color: var(--level-low);
 }
 
+.resolution-note {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #888;
+  white-space: normal;
+}
+
+.resolve-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resolve-action select {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: var(--font-body);
+}
+
 @media (max-width: 480px) {
   .login-page {
     padding: 16px;

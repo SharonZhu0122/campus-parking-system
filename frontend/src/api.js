@@ -59,10 +59,11 @@ export async function getViolations() {
   return response.json();
 }
 
-export async function resolveViolation(id) {
+export async function resolveViolation(id, resolutionType) {
   const response = await fetch(`${API_BASE}/api/admin/violations/${id}/resolve`, {
     method: 'PATCH',
-    headers: authHeaders(),
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ resolutionType }),
   });
   if (!response.ok) {
     throw new Error('Could not resolve this violation');

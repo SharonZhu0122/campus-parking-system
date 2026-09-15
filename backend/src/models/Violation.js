@@ -12,6 +12,18 @@ const Violation = sequelize.define('Violation', {
     allowNull: false,
     defaultValue: false,
   },
+  resolvedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  resolvedBy: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  resolutionType: {
+    type: DataTypes.ENUM('ticket_issued', 'false_positive', 'other'),
+    allowNull: true,
+  },
 });
 
 ParkingEvent.hasMany(Violation, { foreignKey: 'parkingEventId' });
