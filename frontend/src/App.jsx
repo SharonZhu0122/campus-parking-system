@@ -49,6 +49,11 @@ function App() {
       role={loggedInRole}
       onLoginClick={() => setView('login')}
       onAdminClick={() => setView('admin')}
+      onLogout={() => {
+        localStorage.removeItem('token');
+        setLoggedInUser(null);
+        setLoggedInRole(null);
+      }}
     />
   );
 }
