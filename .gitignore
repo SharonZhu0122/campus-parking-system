@@ -4,4 +4,4 @@ node_modules/
 dist/
 build/
 *.log
-.claude/launch.json
+**/.claude/launch.json

@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "test": "jest",
-    "start": "node src/server.js",
+    "start": "node src/scripts/setup.js && node src/server.js",
     "dev": "node --watch src/server.js"
   },
   "keywords": [],
