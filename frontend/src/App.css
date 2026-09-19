@@ -110,6 +110,21 @@ body {
   border-color: var(--waikato-red);
 }
 
+.field select {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 15px;
+  font-family: var(--font-body);
+  background: #ffffff;
+}
+
+.field select:focus {
+  outline: 2px solid var(--waikato-red);
+  outline-offset: 1px;
+  border-color: var(--waikato-red);
+}
+
 .login-form button[type='submit'] {
   padding: 11px;
   border: none;
@@ -405,6 +420,35 @@ body {
   border-radius: 4px;
   font-size: 13px;
   font-family: var(--font-body);
+}
+
+/* ---------- Predictions ---------- */
+
+.history-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 140px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 4px;
+}
+
+.history-bar {
+  flex: 1 1 auto;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  background: var(--waikato-light-grey);
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+}
+
+.history-bar-fill {
+  width: 100%;
+  min-height: 2px;
+  background: var(--waikato-red);
+  border-radius: 3px 3px 0 0;
 }
 
 @media (max-width: 480px) {

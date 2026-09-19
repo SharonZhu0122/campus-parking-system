@@ -9,7 +9,7 @@ const RESOLUTION_LABELS = {
   other: 'Other',
 };
 
-function AdminPage({ onBack }) {
+function AdminPage({ onBack, onPredictionsClick }) {
   const [violations, setViolations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -50,9 +50,14 @@ function AdminPage({ onBack }) {
       <header className="top-bar">
         <div className="top-bar-inner">
           <span className="brand-mark">University of Waikato &middot; Parking</span>
-          <button type="button" className="top-bar-link" onClick={onBack}>
-            Back to occupancy
-          </button>
+          <div className="top-bar-actions">
+            <button type="button" className="top-bar-link" onClick={onPredictionsClick}>
+              Predictions
+            </button>
+            <button type="button" className="top-bar-link" onClick={onBack}>
+              Back to occupancy
+            </button>
+          </div>
         </div>
       </header>
 

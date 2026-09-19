@@ -59,6 +59,16 @@ export async function getViolations() {
   return response.json();
 }
 
+export async function getPredictions(gateId) {
+  const response = await fetch(`${API_BASE}/api/admin/predictions/${gateId}`, {
+    headers: authHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error('Could not load predictions');
+  }
+  return response.json();
+}
+
 export async function resolveViolation(id, resolutionType) {
   const response = await fetch(`${API_BASE}/api/admin/violations/${id}/resolve`, {
     method: 'PATCH',

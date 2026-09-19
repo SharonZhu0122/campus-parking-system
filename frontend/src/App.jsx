@@ -3,6 +3,7 @@ import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 import OccupancyPage from './OccupancyPage';
 import AdminPage from './AdminPage';
+import PredictionsPage from './PredictionsPage';
 import './App.css';
 
 function App() {
@@ -41,7 +42,16 @@ function App() {
   }
 
   if (view === 'admin') {
-    return <AdminPage onBack={() => setView('occupancy')} />;
+    return (
+      <AdminPage
+        onBack={() => setView('occupancy')}
+        onPredictionsClick={() => setView('predictions')}
+      />
+    );
+  }
+
+  if (view === 'predictions') {
+    return <PredictionsPage onBack={() => setView('admin')} />;
   }
 
   return (
