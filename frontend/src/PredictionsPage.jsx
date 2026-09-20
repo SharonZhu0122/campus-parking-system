@@ -71,6 +71,14 @@ function PredictionsPage({ onBack }) {
 
         {!loading && data && (
           <>
+            <div className="gate-card" style={{ margin: '0 auto 32px', maxWidth: 320 }}>
+              <span className="gate-label">Current occupancy</span>
+              <span className="occupancy-percent level-low">
+                {data.series[data.series.length - 1].occupancyPercent}%
+              </span>
+              <span className="occupancy-detail">right now</span>
+            </div>
+
             <div className="history-chart">
               {data.series.map((point) => (
                 <div key={point.time} className="history-bar" title={`${point.occupancyPercent}%`}>
