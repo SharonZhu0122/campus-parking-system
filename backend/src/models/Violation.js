@@ -24,6 +24,11 @@ const Violation = sequelize.define('Violation', {
     type: DataTypes.ENUM('ticket_issued', 'false_positive', 'other'),
     allowNull: true,
   },
+  notificationSent: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
 });
 
 ParkingEvent.hasMany(Violation, { foreignKey: 'parkingEventId' });

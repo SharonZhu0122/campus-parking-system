@@ -104,6 +104,12 @@ function AdminPage({ onBack, onPredictionsClick }) {
                               {v.resolvedBy}
                               <br />
                               {new Date(v.resolvedAt).toLocaleString()}
+                              {v.notificationSent && (
+                                <>
+                                  <br />
+                                  Notification sent to registered owner
+                                </>
+                              )}
                             </>
                           ) : (
                             'Resolved before this detail was tracked'

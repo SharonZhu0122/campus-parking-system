@@ -67,6 +67,7 @@ router.patch('/violations/:id/resolve', requireAuth, requireAdmin, async (req, r
   violation.resolvedAt = new Date();
   violation.resolvedBy = req.user.username;
   violation.resolutionType = resolutionType;
+  violation.notificationSent = resolutionType === 'ticket_issued';
   await violation.save();
   res.json(violation);
 });
