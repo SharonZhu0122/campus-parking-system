@@ -33,10 +33,11 @@ async function getOccupancySeries(gateAreaId, bucketHours = 1, numBuckets = 24) 
     const bucketTime = new Date(now.getTime() - i * bucketHours * 60 * 60000);
     const occupiedCount = events.filter((event) => isCurrentlyParked(event, bucketTime)).length;
     const occupancyPercent = Math.round((occupiedCount / gate.totalParks) * 100);
-    series.push({ time: bucketTime, occupancyPercent });
+    const available = gate.totalParks - occupiedCount;
+    series.push({ time: bucketTime, occupied: occupiedCount, available, occupancyPercent });
   }
 
-  return { gateId: gate.id, gateName: gate.name, series };
+  return { gateId: gate.id, gateName: gate.name, totalParks: gate.totalParks, series };
 }
 
 module.exports = { isCurrentlyParked, getGateOccupancy, getOccupancySeries };

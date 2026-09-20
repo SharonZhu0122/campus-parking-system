@@ -13,12 +13,14 @@ const router = express.Router();
 const PREDICTION_WINDOW = 3;
 
 router.get('/predictions/:gateId', requireAuth, requireAdmin, async (req, res) => {
-  const { gateName, series } = await getOccupancySeries(req.params.gateId, 1, 24);
-  const values = series.map((point) => point.occupancyPercent);
+  const { gateName, totalParks, series } = await getOccupancySeries(req.params.gateId, 1, 24);
+  const availableValues = series.map((point) => point.available);
 
-  const movingAveragePrediction = movingAverage(values, PREDICTION_WINDOW);
-  const linearRegressionPrediction = linearRegressionPredictNext(values.slice(-PREDICTION_WINDOW));
-  const accuracy = backtestAccuracy(values, PREDICTION_WINDOW);
+  const movingAveragePrediction = movingAverage(availableValues, PREDICTION_WINDOW);
+  const linearRegressionPrediction = linearRegressionPredictNext(
+    availableValues.slice(-PREDICTION_WINDOW)
+  );
+  const accuracy = backtestAccuracy(availableValues, PREDICTION_WINDOW);
 
   let moreAccurateMethod = null;
   if (accuracy.testedPoints > 0) {
@@ -31,6 +33,7 @@ router.get('/predictions/:gateId', requireAuth, requireAdmin, async (req, res) =
   res.json({
     gateId: Number(req.params.gateId),
     gateName,
+    totalParks,
     series,
     movingAveragePrediction,
     linearRegressionPrediction,

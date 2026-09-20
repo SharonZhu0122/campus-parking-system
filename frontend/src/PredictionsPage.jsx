@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getGates, getPredictions } from './api';
 
 const METHOD_LABELS = {
@@ -6,12 +6,19 @@ const METHOD_LABELS = {
   linear_regression: 'Linear regression',
 };
 
+function occupancyLevel(percent) {
+  if (percent >= 90) return 'high';
+  if (percent >= 50) return 'medium';
+  return 'low';
+}
+
 function PredictionsPage({ onBack }) {
   const [gates, setGates] = useState([]);
   const [selectedGateId, setSelectedGateId] = useState('');
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     getGates()
@@ -22,17 +29,25 @@ function PredictionsPage({ onBack }) {
       .catch((err) => setError(err.message));
   }, []);
 
-  useEffect(() => {
+  const loadPredictions = useCallback(() => {
     if (!selectedGateId) return;
     setLoading(true);
     getPredictions(selectedGateId)
       .then((result) => {
         setData(result);
+        setLastUpdated(new Date());
         setError('');
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [selectedGateId]);
+
+  useEffect(() => {
+    loadPredictions();
+  }, [loadPredictions]);
+
+  const currentPoint = data ? data.series[data.series.length - 1] : null;
+  const currentLevel = currentPoint ? occupancyLevel(currentPoint.occupancyPercent) : 'low';
 
   return (
     <div className="occupancy-page">
@@ -48,40 +63,72 @@ function PredictionsPage({ onBack }) {
       <main className="page-content admin-content">
         <h1 style={{ textAlign: 'center' }}>Predictions</h1>
         <p className="subtitle" style={{ textAlign: 'center' }}>
-          Predicted occupancy for the next hour, using the last 24 hours of data.
+          Predicted available spaces for the next hour, based on the last 24 hours of data.
         </p>
 
-        <div className="field" style={{ maxWidth: 260, margin: '0 auto 32px' }}>
-          <label htmlFor="gate-select">Gate</label>
-          <select
-            id="gate-select"
-            value={selectedGateId}
-            onChange={(e) => setSelectedGateId(e.target.value)}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            gap: 16,
+            marginBottom: 32,
+          }}
+        >
+          <div className="field" style={{ maxWidth: 260 }}>
+            <label htmlFor="gate-select">Gate</label>
+            <select
+              id="gate-select"
+              value={selectedGateId}
+              onChange={(e) => setSelectedGateId(e.target.value)}
+            >
+              {gates.map((gate) => (
+                <option key={gate.id} value={gate.id}>
+                  {gate.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="button"
+            className="link-button"
+            onClick={loadPredictions}
+            disabled={loading}
           >
-            {gates.map((gate) => (
-              <option key={gate.id} value={gate.id}>
-                {gate.name}
-              </option>
-            ))}
-          </select>
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </button>
         </div>
 
         {error && <p className="error" style={{ textAlign: 'center' }}>{error}</p>}
-        {loading && <p className="subtitle" style={{ textAlign: 'center' }}>Loading...</p>}
 
-        {!loading && data && (
+        {data && (
           <>
+            <p className="subtitle" style={{ textAlign: 'center', marginTop: -16 }}>
+              {lastUpdated ? `Last updated at ${lastUpdated.toLocaleTimeString()}` : ''}
+            </p>
+
             <div className="gate-card" style={{ margin: '0 auto 32px', maxWidth: 320 }}>
-              <span className="gate-label">Current occupancy</span>
-              <span className="occupancy-percent level-low">
-                {data.series[data.series.length - 1].occupancyPercent}%
+              <span className="gate-label">Currently available</span>
+              <span className={`occupancy-percent level-${currentLevel}`}>
+                {currentPoint.available}
               </span>
-              <span className="occupancy-detail">right now</span>
+              <span className="available-label">spaces available</span>
+              <div className="occupancy-bar">
+                <div
+                  className={`occupancy-bar-fill level-${currentLevel}`}
+                  style={{ width: `${Math.min(currentPoint.occupancyPercent, 100)}%` }}
+                />
+              </div>
+              <span className="occupancy-detail">out of {data.totalParks} total</span>
             </div>
 
             <div className="history-chart">
               {data.series.map((point) => (
-                <div key={point.time} className="history-bar" title={`${point.occupancyPercent}%`}>
+                <div
+                  key={point.time}
+                  className="history-bar"
+                  title={`${point.available} spaces available`}
+                >
                   <div
                     className="history-bar-fill"
                     style={{ height: `${Math.min(point.occupancyPercent, 100)}%` }}
@@ -97,16 +144,16 @@ function PredictionsPage({ onBack }) {
               <div className="gate-card">
                 <span className="gate-label">Moving average predicts</span>
                 <span className="occupancy-percent level-low">
-                  {Math.round(data.movingAveragePrediction)}%
+                  {Math.round(data.movingAveragePrediction)}
                 </span>
-                <span className="occupancy-detail">for the next hour</span>
+                <span className="occupancy-detail">spaces available next hour</span>
               </div>
               <div className="gate-card">
                 <span className="gate-label">Linear regression predicts</span>
                 <span className="occupancy-percent level-low">
-                  {Math.round(data.linearRegressionPrediction)}%
+                  {Math.round(data.linearRegressionPrediction)}
                 </span>
-                <span className="occupancy-detail">for the next hour</span>
+                <span className="occupancy-detail">spaces available next hour</span>
               </div>
               <div className="gate-card">
                 <span className="gate-label">More accurate method</span>
@@ -115,8 +162,8 @@ function PredictionsPage({ onBack }) {
                 </span>
                 {data.accuracy.testedPoints > 0 && (
                   <span className="occupancy-detail">
-                    Avg error: MA {data.accuracy.movingAverageError.toFixed(1)}% vs LR{' '}
-                    {data.accuracy.linearRegressionError.toFixed(1)}% (tested on{' '}
+                    Avg error: MA {data.accuracy.movingAverageError.toFixed(1)} vs LR{' '}
+                    {data.accuracy.linearRegressionError.toFixed(1)} spaces (tested on{' '}
                     {data.accuracy.testedPoints} points)
                   </span>
                 )}
