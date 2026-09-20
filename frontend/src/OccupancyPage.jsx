@@ -102,9 +102,6 @@ function OccupancyPage({ username, role, onLoginClick, onAdminLoginClick, onAdmi
                         style={{ width: `${Math.min(percent, 100)}%` }}
                       />
                     </div>
-                    <span className="occupancy-detail">
-                      {occupancy.occupied} / {occupancy.totalParks} occupied
-                    </span>
                   </>
                 ) : (
                   <span className="occupancy-detail">Loading...</span>
