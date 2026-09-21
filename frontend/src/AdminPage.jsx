@@ -9,6 +9,12 @@ const RESOLUTION_LABELS = {
   other: 'Other',
 };
 
+const VIOLATION_LABELS = {
+  reserved_violation: 'Reserved space violation',
+  unpaid_violation: 'Unpaid during paid hours',
+  mobility_violation: 'Mobility park violation',
+};
+
 function AdminPage({ onBack, onPredictionsClick }) {
   const [violations, setViolations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,7 +96,7 @@ function AdminPage({ onBack, onPredictionsClick }) {
                   <tr key={v.id}>
                     <td>{v.ParkingEvent.plateNumber}</td>
                     <td>{v.ParkingEvent.GateArea.name}</td>
-                    <td>{v.violationType}</td>
+                    <td>{VIOLATION_LABELS[v.violationType] || v.violationType}</td>
                     <td>{new Date(v.createdAt).toLocaleString()}</td>
                     <td>
                       <span className={`status-badge ${v.resolved ? 'resolved' : 'unresolved'}`}>
