@@ -6,6 +6,7 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
   const [password, setPassword] = useState('');
   const [plateNumber, setPlateNumber] = useState('');
   const [contactEmail, setContactEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -14,7 +15,7 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
     setError('');
     setLoading(true);
     try {
-      await register(username, password, plateNumber, contactEmail);
+      await register(username, password, plateNumber, contactEmail, phoneNumber);
       onRegisterSuccess(username);
     } catch (err) {
       setError(err.message);
@@ -51,23 +52,36 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
           />
         </div>
         <div className="field">
-          <label htmlFor="reg-plate">Vehicle plate number (optional)</label>
+          <label htmlFor="reg-plate">Vehicle plate number</label>
           <input
             id="reg-plate"
             type="text"
             value={plateNumber}
             onChange={(e) => setPlateNumber(e.target.value)}
             placeholder="e.g. ABC123"
+            required
           />
         </div>
         <div className="field">
-          <label htmlFor="reg-email">Contact email (optional)</label>
+          <label htmlFor="reg-email">Contact email</label>
           <input
             id="reg-email"
             type="email"
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
             placeholder="For violation notifications"
+            required
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="reg-phone">Contact phone number</label>
+          <input
+            id="reg-phone"
+            type="tel"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="For violation notifications"
+            required
           />
         </div>
         {error && <p className="error">{error}</p>}

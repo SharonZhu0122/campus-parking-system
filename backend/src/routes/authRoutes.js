@@ -6,9 +6,11 @@ const { User } = require('../models');
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
-  const { username, password, plateNumber, contactEmail } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: 'username and password are required' });
+  const { username, password, plateNumber, contactEmail, phoneNumber } = req.body;
+  if (!username || !password || !plateNumber || !contactEmail || !phoneNumber) {
+    return res.status(400).json({
+      error: 'username, password, plateNumber, contactEmail and phoneNumber are required',
+    });
   }
 
   const existing = await User.findOne({ where: { username } });
@@ -21,8 +23,9 @@ router.post('/register', async (req, res) => {
     username,
     passwordHash,
     role: 'user',
-    plateNumber: plateNumber ? plateNumber.toUpperCase() : null,
-    contactEmail: contactEmail || null,
+    plateNumber: plateNumber.toUpperCase(),
+    contactEmail,
+    phoneNumber,
   });
 
   res.status(201).json({ id: user.id, username: user.username, role: user.role });
