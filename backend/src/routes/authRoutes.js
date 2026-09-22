@@ -6,7 +6,7 @@ const { User } = require('../models');
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, plateNumber, contactEmail } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: 'username and password are required' });
   }
@@ -17,7 +17,13 @@ router.post('/register', async (req, res) => {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = await User.create({ username, passwordHash, role: 'user' });
+  const user = await User.create({
+    username,
+    passwordHash,
+    role: 'user',
+    plateNumber: plateNumber ? plateNumber.toUpperCase() : null,
+    contactEmail: contactEmail || null,
+  });
 
   res.status(201).json({ id: user.id, username: user.username, role: user.role });
 });

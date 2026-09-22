@@ -20,6 +20,9 @@ async function addColumnIfMissing(table, columnDefinition) {
 async function setup() {
   await sequelize.sync();
   await addColumnIfMissing('Violations', 'notificationSent BOOLEAN NOT NULL DEFAULT false');
+  await addColumnIfMissing('Violations', 'notifiedContact VARCHAR(255)');
+  await addColumnIfMissing('Users', 'plateNumber VARCHAR(255)');
+  await addColumnIfMissing('Users', 'contactEmail VARCHAR(255)');
   for (const gate of GATES) {
     const [record] = await GateArea.findOrCreate({ where: { name: gate.name }, defaults: gate });
     if (record.totalParks !== gate.totalParks) {

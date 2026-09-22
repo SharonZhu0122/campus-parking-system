@@ -4,6 +4,8 @@ import { register } from './api';
 function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [plateNumber, setPlateNumber] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -12,7 +14,7 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
     setError('');
     setLoading(true);
     try {
-      await register(username, password);
+      await register(username, password, plateNumber, contactEmail);
       onRegisterSuccess(username);
     } catch (err) {
       setError(err.message);
@@ -46,6 +48,26 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="reg-plate">Vehicle plate number (optional)</label>
+          <input
+            id="reg-plate"
+            type="text"
+            value={plateNumber}
+            onChange={(e) => setPlateNumber(e.target.value)}
+            placeholder="e.g. ABC123"
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="reg-email">Contact email (optional)</label>
+          <input
+            id="reg-email"
+            type="email"
+            value={contactEmail}
+            onChange={(e) => setContactEmail(e.target.value)}
+            placeholder="For violation notifications"
           />
         </div>
         {error && <p className="error">{error}</p>}

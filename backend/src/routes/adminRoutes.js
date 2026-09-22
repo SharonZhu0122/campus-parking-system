@@ -1,5 +1,5 @@
 const express = require('express');
-const { Violation, ParkingEvent, GateArea } = require('../models');
+const { Violation, ParkingEvent, GateArea, User } = require('../models');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { getOccupancySeries } = require('../services/occupancy');
 const {
@@ -58,7 +58,9 @@ router.patch('/violations/:id/resolve', requireAuth, requireAdmin, async (req, r
     return res.status(400).json({ error: 'resolutionType must be one of ' + VALID_RESOLUTION_TYPES.join(', ') });
   }
 
-  const violation = await Violation.findByPk(req.params.id);
+  const violation = await Violation.findByPk(req.params.id, {
+    include: [{ model: ParkingEvent, include: [GateArea] }],
+  });
   if (!violation) {
     return res.status(404).json({ error: 'violation not found' });
   }
@@ -67,7 +69,23 @@ router.patch('/violations/:id/resolve', requireAuth, requireAdmin, async (req, r
   violation.resolvedAt = new Date();
   violation.resolvedBy = req.user.username;
   violation.resolutionType = resolutionType;
-  violation.notificationSent = resolutionType === 'ticket_issued';
+
+  if (resolutionType === 'ticket_issued') {
+    const owner = await User.findOne({
+      where: { plateNumber: violation.ParkingEvent.plateNumber },
+    });
+    if (owner && owner.contactEmail) {
+      violation.notificationSent = true;
+      violation.notifiedContact = owner.contactEmail;
+    } else {
+      violation.notificationSent = false;
+      violation.notifiedContact = null;
+    }
+  } else {
+    violation.notificationSent = false;
+    violation.notifiedContact = null;
+  }
+
   await violation.save();
   res.json(violation);
 });

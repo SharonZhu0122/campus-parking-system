@@ -29,6 +29,10 @@ const Violation = sequelize.define('Violation', {
     allowNull: false,
     defaultValue: false,
   },
+  notifiedContact: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 ParkingEvent.hasMany(Violation, { foreignKey: 'parkingEventId' });

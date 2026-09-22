@@ -30,11 +30,11 @@ export async function getGateOccupancy(gateId) {
   return response.json();
 }
 
-export async function register(username, password) {
+export async function register(username, password, plateNumber, contactEmail) {
   const response = await fetch(`${API_BASE}/api/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, password, plateNumber, contactEmail }),
   });
 
   const data = await response.json();

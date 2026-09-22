@@ -20,6 +20,7 @@ function AdminPage({ onBack, onPredictionsClick }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [pendingChoice, setPendingChoice] = useState({});
+  const [notificationModal, setNotificationModal] = useState(null);
 
   useEffect(() => {
     getViolations()
@@ -43,6 +44,13 @@ function AdminPage({ onBack, onPredictionsClick }) {
       const updated = await resolveViolation(id, resolutionType);
       setViolations((prev) => prev.map((v) => (v.id === id ? { ...v, ...updated } : v)));
       setError('');
+      if (resolutionType === 'ticket_issued') {
+        setNotificationModal(
+          updated.notificationSent
+            ? `Notification sent to ${updated.notifiedContact}`
+            : 'No registered contact found for this plate. Notification not sent.'
+        );
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -113,7 +121,7 @@ function AdminPage({ onBack, onPredictionsClick }) {
                               {v.notificationSent && (
                                 <>
                                   <br />
-                                  Notification sent to registered owner
+                                  Notification sent to {v.notifiedContact}
                                 </>
                               )}
                             </>
@@ -154,6 +162,17 @@ function AdminPage({ onBack, onPredictionsClick }) {
           </div>
         )}
       </main>
+
+      {notificationModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <p>{notificationModal}</p>
+            <button type="button" onClick={() => setNotificationModal(null)}>
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
