@@ -4,6 +4,35 @@ import { getGates, getGateOccupancy } from './api';
 const REFRESH_INTERVAL_MS = 5000;
 const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
 
+// Placeholder descriptions based on the public campus map — replace with the
+// real gate labels once confirmed from the maps Denver sent.
+const GATE_LOCATIONS = {
+  'Gate 1': {
+    description: 'Near Knighton Road, by the Student Village.',
+    mapsQuery: 'University of Waikato Gate 1 Knighton Road Hamilton',
+  },
+  'Gate 2b': {
+    description: 'Near Knighton Lake, by the HIKO Hub.',
+    mapsQuery: 'University of Waikato Gate 2b Knighton Road Hamilton',
+  },
+  'Gate 3A': {
+    description: 'Off Ruakura Road, near Property Services.',
+    mapsQuery: 'University of Waikato Gate 3A Ruakura Road Hamilton',
+  },
+  'Gate 3B': {
+    description: 'Off Ruakura Road, near Property Services.',
+    mapsQuery: 'University of Waikato Gate 3B Ruakura Road Hamilton',
+  },
+  'Gate 10': {
+    description: 'Off Silverdale Road, near Orchard Park.',
+    mapsQuery: 'University of Waikato Gate 10 Silverdale Road Hamilton',
+  },
+};
+
+function mapsUrl(query) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 function occupancyLevel(percent) {
   if (percent >= 90) return 'high';
   if (percent >= 50) return 'medium';
@@ -15,6 +44,7 @@ function OccupancyPage({ username, role, onLoginClick, onAdminLoginClick, onAdmi
   const [occupancyByGate, setOccupancyByGate] = useState({});
   const [error, setError] = useState('');
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [openInfoGateId, setOpenInfoGateId] = useState(null);
 
   useEffect(() => {
     getGates()
@@ -89,8 +119,30 @@ function OccupancyPage({ username, role, onLoginClick, onAdminLoginClick, onAdmi
             const percent = occupancy ? occupancy.occupancyPercent : 0;
             const level = occupancyLevel(percent);
             const available = occupancy ? occupancy.totalParks - occupancy.occupied : null;
+            const location = GATE_LOCATIONS[gate.name];
+            const infoOpen = openInfoGateId === gate.id;
             return (
               <div key={gate.id} className="gate-card">
+                {location && (
+                  <div className="gate-info">
+                    <button
+                      type="button"
+                      className="gate-info-button"
+                      aria-label={`Where is ${gate.name}?`}
+                      onClick={() => setOpenInfoGateId(infoOpen ? null : gate.id)}
+                    >
+                      i
+                    </button>
+                    {infoOpen && (
+                      <div className="gate-info-popup">
+                        <p>{location.description}</p>
+                        <a href={mapsUrl(location.mapsQuery)} target="_blank" rel="noopener noreferrer">
+                          Open in Google Maps
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <span className="gate-label">{gate.name}</span>
                 {occupancy ? (
                   <>
