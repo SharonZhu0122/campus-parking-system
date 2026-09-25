@@ -15,7 +15,7 @@ const VIOLATION_LABELS = {
   mobility_violation: 'Mobility park violation',
 };
 
-function AdminPage({ onBack, onPredictionsClick }) {
+function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
   const [violations, setViolations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -67,6 +67,9 @@ function AdminPage({ onBack, onPredictionsClick }) {
           <div className="top-bar-actions">
             <button type="button" className="top-bar-link" onClick={onPredictionsClick}>
               Predictions
+            </button>
+            <button type="button" className="top-bar-link" onClick={onInquiriesClick}>
+              Questions
             </button>
             <button type="button" className="top-bar-link" onClick={onBack}>
               Back to occupancy

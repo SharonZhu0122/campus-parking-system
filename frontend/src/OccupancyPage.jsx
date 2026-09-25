@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getGates, getGateOccupancy } from './api';
+import FaqWidget from './FaqWidget';
 
 const REFRESH_INTERVAL_MS = 5000;
 const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
@@ -164,6 +165,7 @@ function OccupancyPage({ username, role, onLoginClick, onAdminLoginClick, onAdmi
           })}
         </div>
       </main>
+      <FaqWidget />
     </div>
   );
 }

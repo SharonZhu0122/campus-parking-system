@@ -69,6 +69,30 @@ export async function getPredictions(gateId) {
   return response.json();
 }
 
+export async function submitInquiry(question, email) {
+  const response = await fetch(`${API_BASE}/api/inquiries`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question, email }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || 'Could not submit your question');
+  }
+  return data;
+}
+
+export async function getInquiries() {
+  const response = await fetch(`${API_BASE}/api/admin/inquiries`, {
+    headers: authHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error('Could not load inquiries');
+  }
+  return response.json();
+}
+
 export async function resolveViolation(id, resolutionType) {
   const response = await fetch(`${API_BASE}/api/admin/violations/${id}/resolve`, {
     method: 'PATCH',

@@ -1,5 +1,5 @@
 const express = require('express');
-const { Violation, ParkingEvent, GateArea, User } = require('../models');
+const { Violation, ParkingEvent, GateArea, User, Inquiry } = require('../models');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { getOccupancySeries } = require('../services/occupancy');
 const {
@@ -88,6 +88,11 @@ router.patch('/violations/:id/resolve', requireAuth, requireAdmin, async (req, r
 
   await violation.save();
   res.json(violation);
+});
+
+router.get('/inquiries', requireAuth, requireAdmin, async (req, res) => {
+  const inquiries = await Inquiry.findAll({ order: [['createdAt', 'DESC']] });
+  res.json(inquiries);
 });
 
 module.exports = router;

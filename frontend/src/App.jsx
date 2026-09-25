@@ -4,6 +4,7 @@ import RegisterPage from './RegisterPage';
 import OccupancyPage from './OccupancyPage';
 import AdminPage from './AdminPage';
 import PredictionsPage from './PredictionsPage';
+import InquiriesPage from './InquiriesPage';
 import './App.css';
 
 function App() {
@@ -46,12 +47,17 @@ function App() {
       <AdminPage
         onBack={() => setView('occupancy')}
         onPredictionsClick={() => setView('predictions')}
+        onInquiriesClick={() => setView('inquiries')}
       />
     );
   }
 
   if (view === 'predictions') {
     return <PredictionsPage onBack={() => setView('admin')} />;
+  }
+
+  if (view === 'inquiries') {
+    return <InquiriesPage onBack={() => setView('admin')} />;
   }
 
   return (
