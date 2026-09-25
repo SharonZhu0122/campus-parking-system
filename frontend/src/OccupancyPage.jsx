@@ -4,27 +4,28 @@ import { getGates, getGateOccupancy } from './api';
 const REFRESH_INTERVAL_MS = 5000;
 const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
 
-// Placeholder descriptions based on the public campus map — replace with the
-// real gate labels once confirmed from the maps Denver sent.
+// Verified against Google Maps: Gate 1 and Gate 2b have their own listings
+// there. Gate 3A/3B and Gate 10 don't, so those link to the nearest named
+// landmark instead — still close enough to be useful for wayfinding.
 const GATE_LOCATIONS = {
   'Gate 1': {
-    description: 'Near Knighton Road, by the Student Village.',
+    description: 'Off Knighton Road, by The Pā.',
     mapsQuery: 'University of Waikato Gate 1 Knighton Road Hamilton',
   },
   'Gate 2b': {
-    description: 'Near Knighton Lake, by the HIKO Hub.',
-    mapsQuery: 'University of Waikato Gate 2b Knighton Road Hamilton',
+    description: 'Off Knighton Road, by the Academy of Performing Arts.',
+    mapsQuery: 'Gate 2b Academy of Performing Arts Parking, University of Waikato',
   },
   'Gate 3A': {
-    description: 'Off Ruakura Road, near Property Services.',
-    mapsQuery: 'University of Waikato Gate 3A Ruakura Road Hamilton',
+    description: "Off Ruakura Road, near Don Llewellyn's on Campus.",
+    mapsQuery: "Don Llewellyn's on Campus, University of Waikato",
   },
   'Gate 3B': {
-    description: 'Off Ruakura Road, near Property Services.',
-    mapsQuery: 'University of Waikato Gate 3B Ruakura Road Hamilton',
+    description: "Off Ruakura Road, near Don Llewellyn's on Campus.",
+    mapsQuery: "Don Llewellyn's on Campus, University of Waikato",
   },
   'Gate 10': {
-    description: 'Off Silverdale Road, near Orchard Park.',
+    description: 'Off Silverdale Road, near NIWA.',
     mapsQuery: 'University of Waikato Gate 10 Silverdale Road Hamilton',
   },
 };
