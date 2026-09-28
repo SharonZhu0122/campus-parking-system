@@ -12,6 +12,7 @@ function App() {
   const [loggedInRole, setLoggedInRole] = useState(null);
   const [view, setView] = useState('occupancy');
   const [registeredUsername, setRegisteredUsername] = useState('');
+  const [postLoginView, setPostLoginView] = useState('occupancy');
 
   if (view === 'login' || view === 'adminLogin') {
     return (
@@ -20,7 +21,8 @@ function App() {
         onLoginSuccess={(username, role) => {
           setLoggedInUser(username);
           setLoggedInRole(role);
-          setView('occupancy');
+          setView(role === 'admin' ? postLoginView : 'occupancy');
+          setPostLoginView('occupancy');
         }}
         onSwitchToRegister={() => setView('register')}
         registeredUsername={registeredUsername}
@@ -67,6 +69,14 @@ function App() {
       onLoginClick={() => setView('login')}
       onAdminLoginClick={() => setView('adminLogin')}
       onAdminClick={() => setView('admin')}
+      onPredictionsClick={() => {
+        if (loggedInRole === 'admin') {
+          setView('predictions');
+        } else {
+          setPostLoginView('predictions');
+          setView('adminLogin');
+        }
+      }}
       onLogout={() => {
         localStorage.removeItem('token');
         setLoggedInUser(null);

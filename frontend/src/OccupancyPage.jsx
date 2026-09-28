@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getGates, getGateOccupancy } from './api';
 import FaqWidget from './FaqWidget';
+import campusMapImg from './assets/campus-map.webp';
 
 const REFRESH_INTERVAL_MS = 5000;
 const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
@@ -41,12 +42,21 @@ function occupancyLevel(percent) {
   return 'low';
 }
 
-function OccupancyPage({ username, role, onLoginClick, onAdminLoginClick, onAdminClick, onLogout }) {
+function OccupancyPage({
+  username,
+  role,
+  onLoginClick,
+  onAdminLoginClick,
+  onAdminClick,
+  onPredictionsClick,
+  onLogout,
+}) {
   const [gates, setGates] = useState([]);
   const [occupancyByGate, setOccupancyByGate] = useState({});
   const [error, setError] = useState('');
   const [lastUpdated, setLastUpdated] = useState(null);
   const [openInfoGateId, setOpenInfoGateId] = useState(null);
+  const [mapModalOpen, setMapModalOpen] = useState(false);
 
   useEffect(() => {
     getGates()
@@ -90,6 +100,9 @@ function OccupancyPage({ username, role, onLoginClick, onAdminLoginClick, onAdmi
                   Admin
                 </button>
               )}
+              <button type="button" className="top-bar-link" onClick={onPredictionsClick}>
+                Predictions
+              </button>
               <button type="button" className="top-bar-link" onClick={onLogout}>
                 Log out
               </button>
@@ -98,6 +111,9 @@ function OccupancyPage({ username, role, onLoginClick, onAdminLoginClick, onAdmi
             <span className="top-bar-actions">
               <button type="button" className="top-bar-link" onClick={onLoginClick}>
                 Log in
+              </button>
+              <button type="button" className="top-bar-link" onClick={onPredictionsClick}>
+                Predictions
               </button>
               <button type="button" className="top-bar-link admin-login-link" onClick={onAdminLoginClick}>
                 Admin login
@@ -108,63 +124,99 @@ function OccupancyPage({ username, role, onLoginClick, onAdminLoginClick, onAdmi
       </header>
 
       <main className="page-content">
-        <h1>Parking Availability</h1>
-        <p className="subtitle">
-          {lastUpdated
-            ? `Last updated at ${lastUpdated.toLocaleTimeString()}`
-            : 'Loading current availability...'}
-        </p>
-        {error && <p className="error">{error}</p>}
-        <div className="gate-grid">
-          {gates.map((gate) => {
-            const occupancy = occupancyByGate[gate.id];
-            const percent = occupancy ? occupancy.occupancyPercent : 0;
-            const level = occupancyLevel(percent);
-            const available = occupancy ? occupancy.totalParks - occupancy.occupied : null;
-            const location = GATE_LOCATIONS[gate.name];
-            const infoOpen = openInfoGateId === gate.id;
-            return (
-              <div key={gate.id} className="gate-card">
-                {location && (
-                  <div className="gate-info">
-                    <button
-                      type="button"
-                      className="gate-info-button"
-                      aria-label={`Where is ${gate.name}?`}
-                      onClick={() => setOpenInfoGateId(infoOpen ? null : gate.id)}
-                    >
-                      i
-                    </button>
-                    {infoOpen && (
-                      <div className="gate-info-popup">
-                        <p>{location.description}</p>
-                        <a href={mapsUrl(location.mapsQuery)} target="_blank" rel="noopener noreferrer">
-                          Open in Google Maps
-                        </a>
+        <div className="occupancy-layout">
+          <div className="occupancy-main">
+            <h1>Parking Availability</h1>
+            <p className="subtitle">
+              {lastUpdated
+                ? `Last updated at ${lastUpdated.toLocaleTimeString()}`
+                : 'Loading current availability...'}
+            </p>
+            {error && <p className="error">{error}</p>}
+            <div className="gate-grid">
+              {gates.map((gate) => {
+                const occupancy = occupancyByGate[gate.id];
+                const percent = occupancy ? occupancy.occupancyPercent : 0;
+                const level = occupancyLevel(percent);
+                const available = occupancy ? occupancy.totalParks - occupancy.occupied : null;
+                const location = GATE_LOCATIONS[gate.name];
+                const infoOpen = openInfoGateId === gate.id;
+                return (
+                  <div key={gate.id} className="gate-card">
+                    {location && (
+                      <div className="gate-info">
+                        <button
+                          type="button"
+                          className="gate-info-button"
+                          aria-label={`Where is ${gate.name}?`}
+                          onClick={() => setOpenInfoGateId(infoOpen ? null : gate.id)}
+                        >
+                          i
+                        </button>
+                        {infoOpen && (
+                          <div className="gate-info-popup">
+                            <p>{location.description}</p>
+                            <a
+                              href={mapsUrl(location.mapsQuery)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Open in Google Maps
+                            </a>
+                          </div>
+                        )}
                       </div>
                     )}
+                    <span className="gate-label">{gate.name}</span>
+                    {occupancy ? (
+                      <>
+                        <span className={`occupancy-percent level-${level}`}>{available}</span>
+                        <span className="available-label">spaces available</span>
+                        <div className="occupancy-bar">
+                          <div
+                            className={`occupancy-bar-fill level-${level}`}
+                            style={{ width: `${Math.min(percent, 100)}%` }}
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <span className="occupancy-detail">Loading...</span>
+                    )}
                   </div>
-                )}
-                <span className="gate-label">{gate.name}</span>
-                {occupancy ? (
-                  <>
-                    <span className={`occupancy-percent level-${level}`}>{available}</span>
-                    <span className="available-label">spaces available</span>
-                    <div className="occupancy-bar">
-                      <div
-                        className={`occupancy-bar-fill level-${level}`}
-                        style={{ width: `${Math.min(percent, 100)}%` }}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <span className="occupancy-detail">Loading...</span>
-                )}
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          </div>
+
+          <aside className="campus-map-panel">
+            <span className="gate-label">Campus Map</span>
+            <button
+              type="button"
+              className="campus-map-thumb"
+              onClick={() => setMapModalOpen(true)}
+            >
+              <img src={campusMapImg} alt="University of Waikato campus map" />
+            </button>
+            <span className="occupancy-detail">Click to enlarge</span>
+          </aside>
         </div>
       </main>
+
+      {mapModalOpen && (
+        <div className="modal-overlay" onClick={() => setMapModalOpen(false)}>
+          <div className="map-modal-box" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="map-modal-close"
+              onClick={() => setMapModalOpen(false)}
+            >
+              &times;
+            </button>
+            <img src={campusMapImg} alt="University of Waikato campus map" />
+          </div>
+        </div>
+      )}
+
       <FaqWidget />
     </div>
   );
