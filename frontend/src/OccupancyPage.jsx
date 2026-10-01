@@ -2,6 +2,14 @@ import { useEffect, useState } from 'react';
 import { getGates, getGateOccupancy } from './api';
 import FaqWidget from './FaqWidget';
 import campusMapImg from './assets/campus-map.webp';
+import gate2bThumb from './assets/gate-maps/gate2b-thumb.jpg';
+import gate2bFull from './assets/gate-maps/gate2b-full.jpg';
+import gate3aThumb from './assets/gate-maps/gate3a-thumb.jpg';
+import gate3aFull from './assets/gate-maps/gate3a-full.jpg';
+import gate3bThumb from './assets/gate-maps/gate3b-thumb.jpg';
+import gate3bFull from './assets/gate-maps/gate3b-full.jpg';
+import gate10Thumb from './assets/gate-maps/gate10-thumb.jpg';
+import gate10Full from './assets/gate-maps/gate10-full.jpg';
 
 const REFRESH_INTERVAL_MS = 5000;
 const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
@@ -9,6 +17,8 @@ const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
 // Verified against Google Maps: Gate 1 and Gate 2b have their own listings
 // there. Gate 3A/3B and Gate 10 don't, so those link to the nearest named
 // landmark instead — still close enough to be useful for wayfinding.
+// Map thumbnails are generated from the official campus map with each gate's
+// lot highlighted — still pending confirmation on which lot is Gate 1's.
 const GATE_LOCATIONS = {
   'Gate 1': {
     description: 'Off Knighton Road, by The Pā.',
@@ -17,18 +27,26 @@ const GATE_LOCATIONS = {
   'Gate 2b': {
     description: 'Off Knighton Road, by the Academy of Performing Arts.',
     mapsQuery: 'Gate 2b Academy of Performing Arts Parking, University of Waikato',
+    thumb: gate2bThumb,
+    full: gate2bFull,
   },
   'Gate 3A': {
     description: "Off Ruakura Road, near Don Llewellyn's on Campus.",
     mapsQuery: "Don Llewellyn's on Campus, University of Waikato",
+    thumb: gate3aThumb,
+    full: gate3aFull,
   },
   'Gate 3B': {
     description: "Off Ruakura Road, near Don Llewellyn's on Campus.",
     mapsQuery: "Don Llewellyn's on Campus, University of Waikato",
+    thumb: gate3bThumb,
+    full: gate3bFull,
   },
   'Gate 10': {
     description: 'Off Silverdale Road, near NIWA.',
     mapsQuery: 'University of Waikato Gate 10 Silverdale Road Hamilton',
+    thumb: gate10Thumb,
+    full: gate10Full,
   },
 };
 
@@ -55,8 +73,8 @@ function OccupancyPage({
   const [occupancyByGate, setOccupancyByGate] = useState({});
   const [error, setError] = useState('');
   const [lastUpdated, setLastUpdated] = useState(null);
-  const [openInfoGateId, setOpenInfoGateId] = useState(null);
   const [mapModalOpen, setMapModalOpen] = useState(false);
+  const [activeGateMap, setActiveGateMap] = useState(null);
 
   useEffect(() => {
     getGates()
@@ -140,33 +158,8 @@ function OccupancyPage({
                 const level = occupancyLevel(percent);
                 const available = occupancy ? occupancy.totalParks - occupancy.occupied : null;
                 const location = GATE_LOCATIONS[gate.name];
-                const infoOpen = openInfoGateId === gate.id;
                 return (
                   <div key={gate.id} className="gate-card">
-                    {location && (
-                      <div className="gate-info">
-                        <button
-                          type="button"
-                          className="gate-info-button"
-                          aria-label={`Where is ${gate.name}?`}
-                          onClick={() => setOpenInfoGateId(infoOpen ? null : gate.id)}
-                        >
-                          i
-                        </button>
-                        {infoOpen && (
-                          <div className="gate-info-popup">
-                            <p>{location.description}</p>
-                            <a
-                              href={mapsUrl(location.mapsQuery)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Open in Google Maps
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    )}
                     <span className="gate-label">{gate.name}</span>
                     {occupancy ? (
                       <>
@@ -181,6 +174,16 @@ function OccupancyPage({
                       </>
                     ) : (
                       <span className="occupancy-detail">Loading...</span>
+                    )}
+                    {location?.thumb && (
+                      <button
+                        type="button"
+                        className="gate-map-thumb"
+                        onClick={() => setActiveGateMap({ gate, location })}
+                        aria-label={`Show ${gate.name} on the campus map`}
+                      >
+                        <img src={location.thumb} alt={`${gate.name} location on campus map`} />
+                      </button>
                     )}
                   </div>
                 );
@@ -213,6 +216,34 @@ function OccupancyPage({
               &times;
             </button>
             <img src={campusMapImg} alt="University of Waikato campus map" />
+          </div>
+        </div>
+      )}
+
+      {activeGateMap && (
+        <div className="modal-overlay" onClick={() => setActiveGateMap(null)}>
+          <div className="map-modal-box" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="map-modal-close"
+              onClick={() => setActiveGateMap(null)}
+            >
+              &times;
+            </button>
+            <img
+              src={activeGateMap.location.full}
+              alt={`${activeGateMap.gate.name} highlighted on campus map`}
+            />
+            <div className="gate-map-modal-footer">
+              <p>{activeGateMap.location.description}</p>
+              <a
+                href={mapsUrl(activeGateMap.location.mapsQuery)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in Google Maps
+              </a>
+            </div>
           </div>
         </div>
       )}
