@@ -111,7 +111,7 @@ function OccupancyPage({
   }, [gates]);
 
   return (
-    <div className="occupancy-page">
+    <div className="occupancy-page occupancy-fit">
       <header className="top-bar">
         <div className="top-bar-inner">
           <span className="brand-mark">University of Waikato &middot; Parking</span>
