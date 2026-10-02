@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getGates, getPredictions } from './api';
+import BrandMark from './BrandMark';
 
 const METHOD_LABELS = {
   moving_average: 'Moving average',
@@ -53,7 +54,7 @@ function PredictionsPage({ onBack }) {
     <div className="occupancy-page">
       <header className="top-bar">
         <div className="top-bar-inner">
-          <span className="brand-mark">University of Waikato &middot; Parking</span>
+          <BrandMark />
           <button type="button" className="top-bar-link" onClick={onBack}>
             Back to occupancy
           </button>

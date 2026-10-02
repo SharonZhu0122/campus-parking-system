@@ -12,6 +12,7 @@ import gate3bThumb from './assets/gate-maps/gate3b-thumb.jpg';
 import gate3bFull from './assets/gate-maps/gate3b-full.jpg';
 import gate10Thumb from './assets/gate-maps/gate10-thumb.jpg';
 import gate10Full from './assets/gate-maps/gate10-full.jpg';
+import BrandMark from './BrandMark';
 
 const REFRESH_INTERVAL_MS = 5000;
 const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
@@ -114,7 +115,7 @@ function OccupancyPage({
     <div className="occupancy-page occupancy-fit">
       <header className="top-bar">
         <div className="top-bar-inner">
-          <span className="brand-mark">University of Waikato &middot; Parking</span>
+          <BrandMark />
           {username ? (
             <span className="top-bar-actions">
               <span className="user-status">Logged in as {username}</span>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getInquiries } from './api';
+import BrandMark from './BrandMark';
 
 function InquiriesPage({ onBack }) {
   const [inquiries, setInquiries] = useState([]);
@@ -22,7 +23,7 @@ function InquiriesPage({ onBack }) {
     <div className="occupancy-page">
       <header className="top-bar">
         <div className="top-bar-inner">
-          <span className="brand-mark">University of Waikato &middot; Parking</span>
+          <BrandMark />
           <button type="button" className="top-bar-link" onClick={onBack}>
             Back to admin
           </button>
