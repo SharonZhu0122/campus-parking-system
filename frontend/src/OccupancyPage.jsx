@@ -226,7 +226,7 @@ function OccupancyPage({
 
       {activeGateMap && (
         <div className="modal-overlay" onClick={() => setActiveGateMap(null)}>
-          <div className="map-modal-box" onClick={(e) => e.stopPropagation()}>
+          <div className="map-modal-box gate-map-modal" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               className="map-modal-close"
@@ -239,6 +239,7 @@ function OccupancyPage({
               alt={`${activeGateMap.gate.name} highlighted on campus map`}
             />
             <div className="gate-map-modal-footer">
+              <strong>{activeGateMap.gate.name}</strong>
               <p>{activeGateMap.location.description}</p>
               <a
                 href={mapsUrl(activeGateMap.location.mapsQuery)}

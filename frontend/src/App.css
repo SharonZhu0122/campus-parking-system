@@ -339,9 +339,43 @@ body {
   height: auto;
 }
 
+/* Gate modals use the same large frame as the campus map and never scroll:
+   the image scales to fit the window and the details sit on top of it. */
+.gate-map-modal {
+  height: 90vh;
+  width: auto;
+  aspect-ratio: 1380 / 1125;
+  max-width: 92vw;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  background: #e5e4e2;
+}
+
+.gate-map-modal img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+}
+
 .gate-map-modal-footer {
-  padding: 14px 4px 4px;
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  max-width: 320px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
   text-align: left;
+}
+
+.gate-map-modal-footer strong {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-display);
+  color: var(--waikato-red);
 }
 
 .gate-map-modal-footer p {
@@ -765,5 +799,24 @@ body {
 
   .occupancy-percent {
     font-size: 48px;
+  }
+}
+
+@media (max-width: 600px) {
+  .gate-map-modal {
+    height: auto;
+    width: 92vw;
+    aspect-ratio: auto;
+  }
+
+  .gate-map-modal img {
+    height: auto;
+  }
+
+  .gate-map-modal-footer {
+    position: static;
+    max-width: none;
+    border-radius: 0;
+    box-shadow: none;
   }
 }
