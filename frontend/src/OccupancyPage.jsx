@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { getGates, getGateOccupancy } from './api';
 import FaqWidget from './FaqWidget';
 import campusMapImg from './assets/campus-map.webp';
+import gate1Thumb from './assets/gate-maps/gate1-thumb.jpg';
+import gate1Full from './assets/gate-maps/gate1-full.jpg';
 import gate2bThumb from './assets/gate-maps/gate2b-thumb.jpg';
 import gate2bFull from './assets/gate-maps/gate2b-full.jpg';
 import gate3aThumb from './assets/gate-maps/gate3a-thumb.jpg';
@@ -18,11 +20,14 @@ const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
 // there. Gate 3A/3B and Gate 10 don't, so those link to the nearest named
 // landmark instead — still close enough to be useful for wayfinding.
 // Map thumbnails are generated from the official campus map with each gate's
-// lot highlighted — still pending confirmation on which lot is Gate 1's.
+// lot highlighted. Gate 1's lot is inferred: it's the largest on the map and
+// sits on Knighton Road, matching Gate 1's capacity (487) — worth confirming.
 const GATE_LOCATIONS = {
   'Gate 1': {
     description: 'Off Knighton Road, by The Pā.',
     mapsQuery: 'University of Waikato Gate 1 Knighton Road Hamilton',
+    thumb: gate1Thumb,
+    full: gate1Full,
   },
   'Gate 2b': {
     description: 'Off Knighton Road, by the Academy of Performing Arts.',
