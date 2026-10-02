@@ -5,6 +5,7 @@
   --waikato-dark-grey: #353535;
   --waikato-blue-grey: #32373d;
   --waikato-light-grey: #f2f2f2;
+  --page-bg: #fff8ed;
   --level-low: #2f7d4f;
   --level-medium: #c67c00;
   --level-high: var(--waikato-red);
@@ -19,7 +20,7 @@
 body {
   margin: 0;
   font-family: var(--font-body);
-  background: var(--waikato-light-grey);
+  background: var(--page-bg);
   color: var(--waikato-dark-grey);
 }
 
@@ -183,7 +184,7 @@ body {
 }
 
 .top-bar-inner {
-  max-width: 1080px;
+  max-width: 1560px;
   margin: 0 auto;
   height: 56px;
   display: flex;
@@ -232,7 +233,7 @@ body {
 }
 
 .page-content {
-  max-width: 1080px;
+  max-width: 1560px;
   margin: 0 auto;
   padding: 40px 24px 48px;
   text-align: center;
@@ -251,7 +252,7 @@ body {
 }
 
 .campus-map-panel {
-  flex: 0 0 220px;
+  flex: 0 0 280px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -366,7 +367,7 @@ body {
 
 .gate-map-thumb {
   width: 100%;
-  max-width: 210px;
+  max-width: 300px;
   margin-top: 4px;
   padding: 0;
   border: 1px solid #eee;
