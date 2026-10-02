@@ -239,42 +239,13 @@ body {
   text-align: center;
 }
 
-.occupancy-layout {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 32px;
-}
-
-.occupancy-main {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
 .campus-map-panel {
-  flex: 0 0 280px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  position: sticky;
-  top: 24px;
-}
-
-.campus-map-thumb {
-  padding: 0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #ffffff;
-  cursor: pointer;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-}
-
-.campus-map-thumb img {
-  display: block;
-  width: 100%;
-  height: auto;
+  gap: 12px;
+  padding: 24px 20px;
+  min-width: 0;
 }
 
 .map-modal-box {
@@ -309,20 +280,6 @@ body {
   z-index: 1;
 }
 
-@media (max-width: 800px) {
-  .occupancy-layout {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .campus-map-panel {
-    position: static;
-    flex: 0 0 auto;
-    width: 100%;
-    max-width: 320px;
-  }
-}
-
 .occupancy-page h1 {
   font-family: var(--font-display);
   font-size: 34px;
@@ -340,16 +297,15 @@ body {
 
 .gate-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+  align-items: start;
 }
 
-.gate-grid > .gate-card {
-  grid-column: span 2;
-}
-
-.gate-grid > .gate-card:nth-child(-n + 2) {
-  grid-column: span 3;
+@media (max-width: 900px) {
+  .gate-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .gate-card {
@@ -806,10 +762,6 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .gate-grid > .gate-card,
-  .gate-grid > .gate-card:nth-child(-n + 2) {
-    grid-column: auto;
-  }
 
   .occupancy-percent {
     font-size: 48px;
