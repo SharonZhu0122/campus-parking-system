@@ -6,6 +6,7 @@ const gateRoutes = require('./routes/gateRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const inquiryRoutes = require('./routes/inquiryRoutes');
 const assistantRoutes = require('./routes/assistantRoutes');
+const alertRoutes = require('./routes/alertRoutes');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -21,5 +22,6 @@ app.use('/api/gates', gateRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/assistant', assistantRoutes);
+app.use('/api/alerts', alertRoutes);
 
 module.exports = app;

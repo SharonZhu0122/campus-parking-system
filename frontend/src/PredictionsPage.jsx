@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getGates, getPredictions } from './api';
 import BrandMark from './BrandMark';
+import KeyDateBanner from './KeyDateBanner';
 
 const METHOD_LABELS = {
   moving_average: 'Moving average',
@@ -128,7 +129,7 @@ function TrendChart({ series, movingAverage, linearRegression, totalParks }) {
   );
 }
 
-function PredictionsPage({ onBack }) {
+function PredictionsPage({ onBack, backLabel = 'Back to occupancy' }) {
   const [gates, setGates] = useState([]);
   const [selectedGateId, setSelectedGateId] = useState('');
   const [data, setData] = useState(null);
@@ -177,7 +178,7 @@ function PredictionsPage({ onBack }) {
         <div className="top-bar-inner">
           <BrandMark />
           <button type="button" className="top-bar-link" onClick={onBack}>
-            Back to occupancy
+            {backLabel}
           </button>
         </div>
       </header>
@@ -219,6 +220,7 @@ function PredictionsPage({ onBack }) {
         </div>
 
         {error && <p className="error">{error}</p>}
+        <KeyDateBanner />
 
         {data && (
           <>

@@ -1,46 +1,8 @@
 const express = require('express');
 const { Violation, ParkingEvent, GateArea, User, Inquiry } = require('../models');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
-const { getOccupancySeries } = require('../services/occupancy');
-const {
-  movingAverage,
-  linearRegressionPredictNext,
-  backtestAccuracy,
-} = require('../services/predictions');
 
 const router = express.Router();
-
-const PREDICTION_WINDOW = 3;
-
-router.get('/predictions/:gateId', requireAuth, requireAdmin, async (req, res) => {
-  const { gateName, totalParks, series } = await getOccupancySeries(req.params.gateId, 1, 24);
-  const availableValues = series.map((point) => point.available);
-
-  const movingAveragePrediction = movingAverage(availableValues, PREDICTION_WINDOW);
-  const linearRegressionPrediction = linearRegressionPredictNext(
-    availableValues.slice(-PREDICTION_WINDOW)
-  );
-  const accuracy = backtestAccuracy(availableValues, PREDICTION_WINDOW);
-
-  let moreAccurateMethod = null;
-  if (accuracy.testedPoints > 0) {
-    moreAccurateMethod =
-      accuracy.movingAverageError <= accuracy.linearRegressionError
-        ? 'moving_average'
-        : 'linear_regression';
-  }
-
-  res.json({
-    gateId: Number(req.params.gateId),
-    gateName,
-    totalParks,
-    series,
-    movingAveragePrediction,
-    linearRegressionPrediction,
-    accuracy,
-    moreAccurateMethod,
-  });
-});
 
 router.get('/violations', requireAuth, requireAdmin, async (req, res) => {
   const violations = await Violation.findAll({

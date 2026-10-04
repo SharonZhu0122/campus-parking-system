@@ -60,13 +60,20 @@ export async function getViolations() {
 }
 
 export async function getPredictions(gateId) {
-  const response = await fetch(`${API_BASE}/api/admin/predictions/${gateId}`, {
-    headers: authHeaders(),
-  });
+  const response = await fetch(`${API_BASE}/api/gates/${gateId}/predictions`);
   if (!response.ok) {
     throw new Error('Could not load predictions');
   }
   return response.json();
+}
+
+export async function getAlerts() {
+  // ?today=YYYY-MM-DD on the page address previews the banner on another date.
+  const preview = new URLSearchParams(window.location.search).get('today');
+  const query = preview ? `?today=${encodeURIComponent(preview)}` : '';
+  const response = await fetch(`${API_BASE}/api/alerts${query}`);
+  if (!response.ok) return [];
+  return (await response.json()).alerts;
 }
 
 export async function submitInquiry(question, email) {

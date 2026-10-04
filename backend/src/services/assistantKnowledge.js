@@ -1,3 +1,5 @@
+const { KEY_DATES } = require('../data/keyDates');
+
 // Facts the parking assistant is allowed to use. Anything not listed here is
 // something we have not verified, so the assistant must say it doesn't know.
 const KNOWLEDGE = `
@@ -37,6 +39,10 @@ WHICH GATE IS CLOSEST TO WHICH PLACE
 - Gate 3B: College Hall.
 - Gate 10: Management Student Centre, Waikato Management School.
 - For any other building, say you don't have that information and suggest looking at the campus map on the main page.
+
+BUSIER-THAN-USUAL DATES (from the university's key dates; the website shows a warning 3 days ahead)
+${KEY_DATES.map((e) => `- ${e.name}: ${e.start === e.end ? e.start : `${e.start} to ${e.end}`}`).join('\n')}
+- These are expected to be busier than usual. This is a general expectation, not a measured forecast. The Open Day date has not been confirmed.
 
 OTHER HELP
 - Visitors can use the "Still have a question?" box in this chat panel to send a question with their email.

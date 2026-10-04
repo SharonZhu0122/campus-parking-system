@@ -12,7 +12,7 @@ function App() {
   const [loggedInRole, setLoggedInRole] = useState(null);
   const [view, setView] = useState('occupancy');
   const [registeredUsername, setRegisteredUsername] = useState('');
-  const [postLoginView, setPostLoginView] = useState('occupancy');
+  const [predictionsBack, setPredictionsBack] = useState('occupancy');
 
   if (view === 'login' || view === 'adminLogin') {
     return (
@@ -21,8 +21,7 @@ function App() {
         onLoginSuccess={(username, role) => {
           setLoggedInUser(username);
           setLoggedInRole(role);
-          setView(role === 'admin' ? postLoginView : 'occupancy');
-          setPostLoginView('occupancy');
+          setView('occupancy');
         }}
         onSwitchToRegister={() => setView('register')}
         registeredUsername={registeredUsername}
@@ -48,14 +47,17 @@ function App() {
     return (
       <AdminPage
         onBack={() => setView('occupancy')}
-        onPredictionsClick={() => setView('predictions')}
+        onPredictionsClick={() => {
+          setPredictionsBack('admin');
+          setView('predictions');
+        }}
         onInquiriesClick={() => setView('inquiries')}
       />
     );
   }
 
   if (view === 'predictions') {
-    return <PredictionsPage onBack={() => setView('admin')} />;
+    return <PredictionsPage onBack={() => setView(predictionsBack)} backLabel={predictionsBack === 'admin' ? 'Back to admin' : 'Back to occupancy'} />;
   }
 
   if (view === 'inquiries') {
@@ -70,12 +72,8 @@ function App() {
       onAdminLoginClick={() => setView('adminLogin')}
       onAdminClick={() => setView('admin')}
       onPredictionsClick={() => {
-        if (loggedInRole === 'admin') {
-          setView('predictions');
-        } else {
-          setPostLoginView('predictions');
-          setView('adminLogin');
-        }
+        setPredictionsBack('occupancy');
+        setView('predictions');
       }}
       onLogout={() => {
         localStorage.removeItem('token');

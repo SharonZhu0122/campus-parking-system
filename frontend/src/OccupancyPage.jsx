@@ -13,6 +13,7 @@ import gate3bFull from './assets/gate-maps/gate3b-full.jpg';
 import gate10Thumb from './assets/gate-maps/gate10-thumb.jpg';
 import gate10Full from './assets/gate-maps/gate10-full.jpg';
 import BrandMark from './BrandMark';
+import KeyDateBanner from './KeyDateBanner';
 
 const REFRESH_INTERVAL_MS = 5000;
 const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
@@ -155,6 +156,7 @@ function OccupancyPage({
             : 'Loading current availability...'}
         </p>
         {error && <p className="error">{error}</p>}
+        <KeyDateBanner />
         <div className="gate-grid">
           {gates.map((gate, index) => {
             const occupancy = occupancyByGate[gate.id];
