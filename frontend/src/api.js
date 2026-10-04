@@ -83,6 +83,20 @@ export async function submitInquiry(question, email) {
   return data;
 }
 
+export async function askAssistant(question) {
+  const response = await fetch(`${API_BASE}/api/assistant`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || 'The assistant is unavailable right now');
+  }
+  return data.answer;
+}
+
 export async function getInquiries() {
   const response = await fetch(`${API_BASE}/api/admin/inquiries`, {
     headers: authHeaders(),

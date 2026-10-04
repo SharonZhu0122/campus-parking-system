@@ -926,3 +926,58 @@ body {
     height: 24px;
   }
 }
+
+/* AI assistant box at the top of the FAQ panel */
+.faq-ask {
+  display: flex;
+  gap: 6px;
+  padding-bottom: 10px;
+}
+
+.faq-ask input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+
+.faq-ask button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  background: var(--waikato-red);
+  color: white;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.faq-ask button:disabled {
+  background: #cf9a9a;
+  cursor: wait;
+}
+
+.faq-ai-answer {
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  background: #fff8ed;
+  border-left: 3px solid var(--waikato-yellow);
+  border-radius: 4px;
+  text-align: left;
+}
+
+.faq-ai-answer p {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--waikato-dark-grey);
+}
+
+.faq-ai-answer span {
+  font-size: 11px;
+  color: #888;
+}

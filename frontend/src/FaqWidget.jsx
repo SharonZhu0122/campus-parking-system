@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { submitInquiry } from './api';
+import { askAssistant, submitInquiry } from './api';
 
 const FAQ_ITEMS = [
   {
@@ -36,6 +36,24 @@ function FaqWidget() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [aiAnswer, setAiAnswer] = useState('');
+  const [aiError, setAiError] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+
+  async function handleAsk(e) {
+    e.preventDefault();
+    setAiError('');
+    setAiAnswer('');
+    setAiLoading(true);
+    try {
+      setAiAnswer(await askAssistant(aiQuestion));
+    } catch (err) {
+      setAiError(`${err.message}. You can still use the questions below.`);
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -64,6 +82,27 @@ function FaqWidget() {
             </button>
           </div>
           <div className="faq-panel-body">
+            <form className="faq-ask" onSubmit={handleAsk}>
+              <input
+                type="text"
+                placeholder="Ask the assistant anything about parking..."
+                value={aiQuestion}
+                onChange={(e) => setAiQuestion(e.target.value)}
+                maxLength={300}
+                required
+              />
+              <button type="submit" disabled={aiLoading}>
+                {aiLoading ? 'Thinking...' : 'Ask'}
+              </button>
+            </form>
+            {aiAnswer && (
+              <div className="faq-ai-answer">
+                <p>{aiAnswer}</p>
+                <span>AI-generated answer, it may be wrong. Please double-check with Parking Services.</span>
+              </div>
+            )}
+            {aiError && <p className="error">{aiError}</p>}
+
             {FAQ_ITEMS.map((item, index) => (
               <div key={item.q} className="faq-item">
                 <button
