@@ -19,6 +19,7 @@ const User = sequelize.define('User', {
   plateNumber: {
     type: DataTypes.STRING,
     allowNull: true,
+    unique: true,
   },
   contactEmail: {
     type: DataTypes.STRING,

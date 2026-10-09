@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { register } from './api';
+import AuthLogo from './AuthLogo';
 
 function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
   const [username, setUsername] = useState('');
@@ -29,6 +30,7 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
       <button type="button" className="link-button back-link" onClick={onBack}>
         &larr; Back to gate occupancy
       </button>
+      <AuthLogo />
       <h1>Campus Parking System</h1>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="field">
@@ -59,6 +61,7 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
             value={plateNumber}
             onChange={(e) => setPlateNumber(e.target.value)}
             placeholder="e.g. ABC123"
+            maxLength={8}
             required
           />
         </div>
@@ -80,7 +83,7 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
             type="tel"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="For violation notifications"
+            placeholder="e.g. 021 123 4567"
             required
           />
         </div>

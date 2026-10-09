@@ -50,7 +50,7 @@ const GATE_LOCATIONS = {
     full: gate3bFull,
   },
   'Gate 10': {
-    description: 'Off Silverdale Road, near NIWA.',
+    description: 'Off Silverdale Road, near NIWA. This car park is entered from Silverdale Road.',
     mapsQuery: 'University of Waikato Gate 10 Silverdale Road Hamilton',
     thumb: gate10Thumb,
     full: gate10Full,

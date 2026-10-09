@@ -17,6 +17,17 @@ async function addColumnIfMissing(table, columnDefinition) {
   }
 }
 
+async function addUniqueIndexIfMissing(table, column) {
+  try {
+    await sequelize.query(`ALTER TABLE ${table} ADD UNIQUE INDEX ${column} (${column})`);
+  } catch (err) {
+    if (/duplicate key name/i.test(err.message)) return;
+    // Existing duplicates would block the index. The registration route still
+    // refuses new duplicates, so don't stop the server from starting.
+    console.warn(`Could not add unique index on ${table}.${column}: ${err.message}`);
+  }
+}
+
 async function setup() {
   await sequelize.sync();
   await addColumnIfMissing('Violations', 'notificationSent BOOLEAN NOT NULL DEFAULT false');
@@ -24,6 +35,7 @@ async function setup() {
   await addColumnIfMissing('Users', 'plateNumber VARCHAR(255)');
   await addColumnIfMissing('Users', 'contactEmail VARCHAR(255)');
   await addColumnIfMissing('Users', 'phoneNumber VARCHAR(255)');
+  await addUniqueIndexIfMissing('Users', 'plateNumber');
   for (const gate of GATES) {
     const [record] = await GateArea.findOrCreate({ where: { name: gate.name }, defaults: gate });
     if (record.totalParks !== gate.totalParks) {

@@ -23,6 +23,10 @@ const FAQ_ITEMS = [
     a: 'A Mobility Parking Permit, issued by CCS Disability Action, lets you use designated mobility parks. These are free at all times for permit holders.',
   },
   {
+    q: 'Where are the gates, and which road do I enter from?',
+    a: 'Gate 1 and Gate 2b are off Knighton Road. Gate 3A and Gate 3B are off Ruakura Road. Gate 10 is off Silverdale Road, and its car park must be entered from Silverdale Road.',
+  },
+  {
     q: 'Which gate is closest to my building?',
     a: 'Gate 1: Bryant Hall, Student Village, Unirec. Gate 2b: Knighton Lake, Gallagher Academy of Performing Arts. Gate 3A: Hamilton Star-University Cricket Club, Union @ The Don. Gate 3B: College Hall. Gate 10: Management Student Centre, Waikato Management School.',
   },

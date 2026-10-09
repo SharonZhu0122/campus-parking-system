@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { login } from './api';
+import AuthLogo from './AuthLogo';
 
 function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onBack, isAdmin }) {
   const [username, setUsername] = useState(registeredUsername || '');
@@ -27,6 +28,7 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onB
       <button type="button" className="link-button back-link" onClick={onBack}>
         &larr; Back to gate occupancy
       </button>
+      <AuthLogo />
       <h1>{isAdmin ? 'Admin Login' : 'Campus Parking System'}</h1>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="field">
