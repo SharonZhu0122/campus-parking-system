@@ -121,6 +121,14 @@ function OccupancyPage({
           {username ? (
             <span className="top-bar-actions">
               <span className="user-status">Logged in as {username}</span>
+              <a
+                className="top-bar-link pay-link"
+                href="https://www.paymypark.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Pay for parking
+              </a>
               {role === 'admin' && (
                 <button type="button" className="top-bar-link" onClick={onAdminClick}>
                   Admin
@@ -140,6 +148,14 @@ function OccupancyPage({
             </span>
           ) : (
             <span className="top-bar-actions">
+              <a
+                className="top-bar-link pay-link"
+                href="https://www.paymypark.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Pay for parking
+              </a>
               <button type="button" className="top-bar-link" onClick={onLoginClick}>
                 Log in
               </button>

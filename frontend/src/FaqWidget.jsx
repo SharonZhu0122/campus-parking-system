@@ -5,10 +5,12 @@ const FAQ_ITEMS = [
   {
     q: 'How much does parking cost, and when is it free?',
     a: 'Paid hours are 8:30am to 4:30pm, Monday to Friday. Parking is free outside these hours, including all day on weekends. Motorbikes are free at all times. Payment is made through the PayMyPark app or website.',
+    link: { text: 'Pay on PayMyPark', url: 'https://www.paymypark.com/' },
   },
   {
     q: 'If I pay at Gate 1, can I park at the other gates?',
     a: 'Yes. Payment through PayMyPark is valid campus-wide, not just for the gate you selected when you paid.',
+    link: { text: 'Pay on PayMyPark', url: 'https://www.paymypark.com/' },
   },
   {
     q: 'What are the rules for permit and reserved parks?',
@@ -116,7 +118,19 @@ function FaqWidget() {
                 >
                   {item.q}
                 </button>
-                {openIndex === index && <p className="faq-answer">{item.a}</p>}
+                {openIndex === index && (
+                  <p className="faq-answer">
+                    {item.a}
+                    {item.link && (
+                      <>
+                        {' '}
+                        <a href={item.link.url} target="_blank" rel="noopener noreferrer">
+                          {item.link.text}
+                        </a>
+                      </>
+                    )}
+                  </p>
+                )}
               </div>
             ))}
 

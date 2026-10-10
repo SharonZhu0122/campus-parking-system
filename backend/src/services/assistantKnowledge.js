@@ -13,7 +13,7 @@ PAYMENT AND HOURS
 - Paid parking hours are 8:30am to 4:30pm, Monday to Friday.
 - Parking is free outside those hours, including all day on weekends.
 - Motorbike parks are free at all times.
-- Payment is made through the PayMyPark app or website.
+- Payment is made through the PayMyPark app or website: https://www.paymypark.com/
 - Payment is valid across the whole campus. If you pay while selecting Gate 1, you may still park at any of the other public gates.
 - The actual price per hour or per day is NOT known to this assistant. Tell people to check PayMyPark for current prices.
 
