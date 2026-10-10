@@ -67,6 +67,14 @@ export async function getPredictions(gateId) {
   return response.json();
 }
 
+export async function getMyVehicle() {
+  const response = await fetch(`${API_BASE}/api/me/vehicle`, { headers: authHeaders() });
+  if (!response.ok) {
+    throw new Error('Could not load your vehicle. Please log in again.');
+  }
+  return response.json();
+}
+
 export async function getAlerts() {
   // ?today=YYYY-MM-DD on the page address previews the banner on another date.
   const preview = new URLSearchParams(window.location.search).get('today');

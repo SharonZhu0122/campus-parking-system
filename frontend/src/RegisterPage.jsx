@@ -33,6 +33,10 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
       <AuthLogo />
       <h1>Campus Parking System</h1>
       <form onSubmit={handleSubmit} className="login-form">
+        <p className="register-note">
+          Register your vehicle to check whether it has any violations, and so parking staff can contact you if it
+          does. You don&apos;t need an account to see car park availability.
+        </p>
         <div className="field">
           <label htmlFor="reg-username">Username</label>
           <input

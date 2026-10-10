@@ -5,6 +5,7 @@ import OccupancyPage from './OccupancyPage';
 import AdminPage from './AdminPage';
 import PredictionsPage from './PredictionsPage';
 import InquiriesPage from './InquiriesPage';
+import MyVehiclePage from './MyVehiclePage';
 import './App.css';
 
 function App() {
@@ -60,6 +61,10 @@ function App() {
     return <PredictionsPage onBack={() => setView(predictionsBack)} backLabel={predictionsBack === 'admin' ? 'Back to admin' : 'Back to occupancy'} />;
   }
 
+  if (view === 'myVehicle') {
+    return <MyVehiclePage onBack={() => setView('occupancy')} />;
+  }
+
   if (view === 'inquiries') {
     return <InquiriesPage onBack={() => setView('admin')} />;
   }
@@ -71,6 +76,7 @@ function App() {
       onLoginClick={() => setView('login')}
       onAdminLoginClick={() => setView('adminLogin')}
       onAdminClick={() => setView('admin')}
+      onMyVehicleClick={() => setView('myVehicle')}
       onPredictionsClick={() => {
         setPredictionsBack('occupancy');
         setView('predictions');

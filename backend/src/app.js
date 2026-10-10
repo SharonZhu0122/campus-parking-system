@@ -7,6 +7,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const inquiryRoutes = require('./routes/inquiryRoutes');
 const assistantRoutes = require('./routes/assistantRoutes');
 const alertRoutes = require('./routes/alertRoutes');
+const meRoutes = require('./routes/meRoutes');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -23,5 +24,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/assistant', assistantRoutes);
 app.use('/api/alerts', alertRoutes);
+app.use('/api/me', meRoutes);
 
 module.exports = app;

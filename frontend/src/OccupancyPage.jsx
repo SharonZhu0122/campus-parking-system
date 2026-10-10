@@ -73,6 +73,7 @@ function OccupancyPage({
   onLoginClick,
   onAdminLoginClick,
   onAdminClick,
+  onMyVehicleClick,
   onPredictionsClick,
   onLogout,
 }) {
@@ -123,6 +124,11 @@ function OccupancyPage({
               {role === 'admin' && (
                 <button type="button" className="top-bar-link" onClick={onAdminClick}>
                   Admin
+                </button>
+              )}
+              {role !== 'admin' && (
+                <button type="button" className="top-bar-link" onClick={onMyVehicleClick}>
+                  My vehicle
                 </button>
               )}
               <button type="button" className="top-bar-link" onClick={onPredictionsClick}>
