@@ -1596,3 +1596,30 @@ body {
   font-size: 12px;
   color: #888;
 }
+
+.violations-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.update-violations {
+  padding: 8px 16px;
+  border: 2px solid var(--waikato-red);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--waikato-red);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.update-violations:hover:not(:disabled) {
+  background: #fce8e8;
+}
+
+.update-violations:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

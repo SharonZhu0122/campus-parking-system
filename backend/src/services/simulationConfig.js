@@ -42,5 +42,8 @@ module.exports = {
 
   // Detections nobody has handled expire, so the open list stays short.
   // Violations that staff entered themselves are never removed.
-  MAX_OPEN_AUTOMATIC_VIOLATIONS: 20,
+  MAX_OPEN_AUTOMATIC_VIOLATIONS: 19,
+
+  // The admin's Update button puts this many fresh random violations on the list.
+  SAMPLE_BATCH_SIZE: 19,
 };

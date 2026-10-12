@@ -67,6 +67,10 @@ export async function getViolationSummary() {
   return response.json();
 }
 
+export function refreshSampleViolations() {
+  return sendJson('/api/admin/violations/sample', 'POST', {}, 'Could not update the violations');
+}
+
 export function createViolation(details) {
   return sendJson('/api/admin/violations', 'POST', details, 'Could not add the violation');
 }

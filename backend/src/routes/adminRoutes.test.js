@@ -209,4 +209,31 @@ describe('entering and editing violations by hand', () => {
     expect(res.body.resolved).toBe(res.body.total - res.body.unresolved);
     expect(res.body.resolved).toBeGreaterThanOrEqual(1);
   });
+
+  test('Update puts a fresh batch of random open violations on the list', async () => {
+    const forbidden = await request(app).post('/api/admin/violations/sample').set('Authorization', `Bearer ${normalUserToken}`);
+    expect(forbidden.status).toBe(403);
+
+    const res = await request(app).post('/api/admin/violations/sample').set(auth());
+    expect(res.status).toBe(200);
+    expect(res.body.created).toBe(19);
+
+    const open = await request(app).get('/api/admin/violations?limit=500').set(auth());
+    const automatic = open.body.filter((v) => v.source === 'automatic');
+    expect(automatic).toHaveLength(19);
+    expect(new Set(automatic.map((v) => v.ParkingEvent.plateNumber)).size).toBeGreaterThan(15);
+
+    // another press gives different plates
+    const again = await request(app).post('/api/admin/violations/sample').set(auth());
+    const openAgain = await request(app).get('/api/admin/violations?limit=500').set(auth());
+    const plates = new Set(automatic.map((v) => v.ParkingEvent.plateNumber));
+    const fresh = openAgain.body.filter((v) => v.source === 'automatic' && !plates.has(v.ParkingEvent.plateNumber));
+    expect(again.status).toBe(200);
+    expect(fresh.length).toBeGreaterThan(15);
+  });
+
+  test('Update leaves handled and staff-entered violations alone', async () => {
+    const all = await request(app).get('/api/admin/violations?status=resolved&limit=500').set(auth());
+    expect(all.body.some((v) => v.id === manualId)).toBe(true);
+  });
 });

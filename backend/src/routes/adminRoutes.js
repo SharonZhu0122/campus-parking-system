@@ -2,21 +2,14 @@ const express = require('express');
 const { Violation, ParkingEvent, GateArea, User, Inquiry } = require('../models');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { PLATE_PATTERN, normalisePlate } = require('../utils/validation');
+const { VIOLATION_TYPES, EVENT_FOR_TYPE } = require('../services/violationTypes');
+const { replaceOpenViolations } = require('../services/violationSampler');
 
 const router = express.Router();
 
 const DEFAULT_LIST_LIMIT = 100;
 const MAX_LIST_LIMIT = 500;
 const MAX_NOTE_LENGTH = 500;
-const VIOLATION_TYPES = ['reserved_violation', 'unpaid_violation', 'mobility_violation'];
-
-// What the parking record looks like for each kind of violation staff can enter.
-const EVENT_FOR_TYPE = {
-  reserved_violation: { parkType: 'reserved', paymentStatus: 'not_required', mobilityCardValid: null },
-  unpaid_violation: { parkType: 'standard', paymentStatus: 'unpaid', mobilityCardValid: null },
-  mobility_violation: { parkType: 'mobility', paymentStatus: 'not_required', mobilityCardValid: false },
-};
-
 const WITH_EVENT = [{ model: ParkingEvent, include: [GateArea] }];
 
 const LIST_STATUSES = ['open', 'resolved', 'all'];
@@ -40,6 +33,12 @@ router.get('/violations/summary', requireAuth, requireAdmin, async (req, res) =>
   const total = await Violation.count();
   const unresolved = await Violation.count({ where: { resolved: false } });
   res.json({ total, unresolved, resolved: total - unresolved });
+});
+
+// Demo helper: swap the open detections for a fresh batch of random ones.
+router.post('/violations/sample', requireAuth, requireAdmin, async (req, res) => {
+  const created = await replaceOpenViolations();
+  res.json({ created });
 });
 
 // Staff record what they find on patrol. It becomes an ordinary violation that

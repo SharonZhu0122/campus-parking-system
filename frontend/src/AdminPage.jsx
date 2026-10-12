@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createViolation, getGates, getViolations, getViolationSummary, resolveViolation, updateViolation } from './api';
+import { createViolation, refreshSampleViolations, getGates, getViolations, getViolationSummary, resolveViolation, updateViolation } from './api';
 import BrandMark from './BrandMark';
 
 const REFRESH_MS = 10000;
@@ -97,6 +97,7 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
   const [totals, setTotals] = useState({ total: 0, unresolved: 0, resolved: 0 });
   const [tab, setTab] = useState('open'); // 'open' or 'resolved'
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [updating, setUpdating] = useState(false);
   const [gates, setGates] = useState([]);
   const [formMode, setFormMode] = useState(null); // null, 'add' or a violation being edited
   const [loading, setLoading] = useState(true);
@@ -135,6 +136,21 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, busyWithDialog]);
+
+  // Demo helper: swap the open detections for a fresh random batch.
+  async function handleUpdate() {
+    setUpdating(true);
+    setError('');
+    try {
+      await refreshSampleViolations();
+      await loadAll('open');
+      setTab('open');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUpdating(false);
+    }
+  }
 
   function handleSaved() {
     setFormMode(null);
@@ -208,9 +224,22 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
                 : `Showing the most recent ${violations.length}.`}
               {lastUpdated && <span className="admin-updated"> Updated {lastUpdated.toLocaleTimeString()}</span>}
             </span>
-            <button type="button" className="add-violation" onClick={() => setFormMode('add')}>
-              Add violation
-            </button>
+            <span className="violations-buttons">
+              {tab === 'open' && (
+                <button
+                  type="button"
+                  className="update-violations"
+                  onClick={handleUpdate}
+                  disabled={updating}
+                  title="Replace the open detections with a fresh batch of 19 random ones"
+                >
+                  {updating ? 'Updating...' : 'Update'}
+                </button>
+              )}
+              <button type="button" className="add-violation" onClick={() => setFormMode('add')}>
+                Add violation
+              </button>
+            </span>
           </div>
         )}
         {!loading && (
