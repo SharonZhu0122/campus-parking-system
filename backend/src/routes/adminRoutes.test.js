@@ -188,4 +188,25 @@ describe('entering and editing violations by hand', () => {
     const res = await request(app).patch(`/api/admin/violations/${manualId}`).set(auth()).send({ note: 'too late' });
     expect(res.status).toBe(409);
   });
+
+  test('the list shows open violations by default and resolved ones on request', async () => {
+    const open = await request(app).get('/api/admin/violations?limit=500').set(auth());
+    expect(open.body.every((v) => v.resolved === false)).toBe(true);
+    expect(open.body.some((v) => v.id === manualId)).toBe(false);
+
+    const resolved = await request(app).get('/api/admin/violations?status=resolved&limit=5').set(auth());
+    expect(resolved.body.every((v) => v.resolved === true)).toBe(true);
+    expect(resolved.body.some((v) => v.id === manualId)).toBe(true);
+
+    const all = await request(app).get('/api/admin/violations?status=all&limit=500').set(auth());
+    expect(all.body.some((v) => v.id === manualId)).toBe(true);
+
+    expect((await request(app).get('/api/admin/violations?status=nope').set(auth())).status).toBe(400);
+  });
+
+  test('the summary counts open and resolved', async () => {
+    const res = await request(app).get('/api/admin/violations/summary').set(auth());
+    expect(res.body.resolved).toBe(res.body.total - res.body.unresolved);
+    expect(res.body.resolved).toBeGreaterThanOrEqual(1);
+  });
 });

@@ -92,7 +92,8 @@ function ViolationForm({ gates, editing, onClose, onSaved }) {
 
 function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
   const [violations, setViolations] = useState([]);
-  const [totals, setTotals] = useState({ total: 0, unresolved: 0 });
+  const [totals, setTotals] = useState({ total: 0, unresolved: 0, resolved: 0 });
+  const [tab, setTab] = useState('open'); // 'open' or 'resolved'
   const [gates, setGates] = useState([]);
   const [formMode, setFormMode] = useState(null); // null, 'add' or a violation being edited
   const [loading, setLoading] = useState(true);
@@ -100,8 +101,8 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
   const [pendingChoice, setPendingChoice] = useState({});
   const [notificationModal, setNotificationModal] = useState(null);
 
-  function loadAll() {
-    return Promise.all([getViolations(), getViolationSummary(), getGates()])
+  function loadAll(status = tab) {
+    return Promise.all([getViolations(status), getViolationSummary(), getGates()])
       .then(([data, summary, gateList]) => {
         setViolations(data);
         setTotals(summary);
@@ -115,8 +116,9 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
   }
 
   useEffect(() => {
-    loadAll();
-  }, []);
+    loadAll(tab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
 
   function handleSaved() {
     setFormMode(null);
@@ -132,8 +134,9 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
     }
     try {
       const updated = await resolveViolation(id, resolutionType);
-      setViolations((prev) => prev.map((v) => (v.id === id ? { ...v, ...updated } : v)));
-      setTotals((prev) => ({ ...prev, unresolved: Math.max(prev.unresolved - 1, 0) }));
+      // A handled violation leaves the open list.
+      setViolations((prev) => prev.filter((v) => v.id !== id));
+      setTotals((prev) => ({ ...prev, unresolved: Math.max(prev.unresolved - 1, 0), resolved: prev.resolved + 1 }));
       setError('');
       if (resolutionType === 'ticket_issued') {
         setNotificationModal(
@@ -170,12 +173,24 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
       <main className="page-content admin-content">
         <h1>Violations</h1>
         <p className="subtitle">
-          {loading ? 'Loading...' : `${totals.unresolved} unresolved out of ${totals.total} total`}
+          {loading ? 'Loading...' : `${totals.unresolved} waiting to be handled`}
         </p>
         {error && <p className="error">{error}</p>}
+        <div className="violations-tabs" role="tablist">
+          <button type="button" role="tab" aria-selected={tab === 'open'} className={`busy-day${tab === 'open' ? ' active' : ''}`} onClick={() => setTab('open')}>
+            Open ({totals.unresolved})
+          </button>
+          <button type="button" role="tab" aria-selected={tab === 'resolved'} className={`busy-day${tab === 'resolved' ? ' active' : ''}`} onClick={() => setTab('resolved')}>
+            Handled ({totals.resolved})
+          </button>
+        </div>
         {!loading && (
           <div className="violations-toolbar">
-            <span className="subtitle">Showing the most recent {violations.length}.</span>
+            <span className="subtitle">
+              {violations.length === 0
+                ? tab === 'open' ? 'Nothing is waiting. Every violation has been handled.' : 'No violations have been handled yet.'
+                : `Showing the most recent ${violations.length}.`}
+            </span>
             <button type="button" className="add-violation" onClick={() => setFormMode('add')}>
               Add violation
             </button>

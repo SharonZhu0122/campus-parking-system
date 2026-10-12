@@ -19,21 +19,27 @@ const EVENT_FOR_TYPE = {
 
 const WITH_EVENT = [{ model: ParkingEvent, include: [GateArea] }];
 
+const LIST_STATUSES = ['open', 'resolved', 'all'];
+
+// Open violations by default: the ones staff still have to deal with.
 router.get('/violations', requireAuth, requireAdmin, async (req, res) => {
+  const status = req.query.status || 'open';
+  if (!LIST_STATUSES.includes(status)) {
+    return res.status(400).json({ error: 'status must be one of ' + LIST_STATUSES.join(', ') });
+  }
   const requested = Number.parseInt(req.query.limit, 10);
   const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, MAX_LIST_LIMIT) : DEFAULT_LIST_LIMIT;
-  const violations = await Violation.findAll({
-    include: WITH_EVENT,
-    order: [['createdAt', 'DESC']],
-    limit,
-  });
+
+  const where = status === 'all' ? {} : { resolved: status === 'resolved' };
+  const order = status === 'resolved' ? [['resolvedAt', 'DESC']] : [['createdAt', 'DESC']];
+  const violations = await Violation.findAll({ where, include: WITH_EVENT, order, limit });
   res.json(violations);
 });
 
 router.get('/violations/summary', requireAuth, requireAdmin, async (req, res) => {
   const total = await Violation.count();
   const unresolved = await Violation.count({ where: { resolved: false } });
-  res.json({ total, unresolved });
+  res.json({ total, unresolved, resolved: total - unresolved });
 });
 
 // Staff record what they find on patrol. It becomes an ordinary violation that

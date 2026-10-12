@@ -49,8 +49,8 @@ function authHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export async function getViolations() {
-  const response = await fetch(`${API_BASE}/api/admin/violations?limit=100`, {
+export async function getViolations(status = 'open') {
+  const response = await fetch(`${API_BASE}/api/admin/violations?status=${status}&limit=100`, {
     headers: authHeaders(),
   });
   if (!response.ok) {
