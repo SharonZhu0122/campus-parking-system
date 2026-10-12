@@ -119,3 +119,28 @@ test('violations are rare in the simulation', () => {
   expect(violationShare).toBeLessThan(0.02);
   expect(violationShare).toBeGreaterThan(0.003);
 });
+
+describe('a car park never holds more cars than spaces', () => {
+  const { clampOccupancy, overflowReleases } = require('./occupancy');
+  const NOW = new Date('2026-10-13T12:00:00+13:00');
+  const car = (id, minutesAgo, stay) => ({ id, eventTime: new Date(NOW.getTime() - minutesAgo * 60000), durationMinutes: stay });
+
+  test('clamps the count between zero and the number of spaces', () => {
+    expect(clampOccupancy(71, 60)).toBe(60);
+    expect(clampOccupancy(-3, 60)).toBe(0);
+    expect(clampOccupancy(25, 60)).toBe(25);
+  });
+
+  test('nothing is released while there is room', () => {
+    expect(overflowReleases([car(1, 10, 60), car(2, 20, 60)], 2, NOW)).toEqual([]);
+  });
+
+  test('the cars due to leave first leave now when there is overflow', () => {
+    const active = [car(1, 10, 200), car(2, 100, 120), car(3, 30, 40), car(4, 5, 90)];
+    // 4 cars, 2 spaces: cars 3 (leaves in 10 min) and 2 (leaves in 20 min) go first
+    const releases = overflowReleases(active, 2, NOW);
+    expect(releases.map((r) => r.id).sort()).toEqual([2, 3]);
+    expect(releases.find((r) => r.id === 3).durationMinutes).toBe(30);
+    expect(releases.find((r) => r.id === 2).durationMinutes).toBe(100);
+  });
+});

@@ -3,7 +3,7 @@ const { GateArea, ParkingEvent, Violation } = require('../models');
 const { checkViolations, isPaidHours } = require('./ruleEngine');
 const config = require('./simulationConfig');
 const { createGateModel, dayNoise } = require('./typicalDay');
-const { getGateOccupancy } = require('./occupancy');
+const { getGateOccupancy, enforceAllCapacities } = require('./occupancy');
 const { nzParts } = require('../utils/nzTime');
 const { trimOpenViolations } = require('./violationHousekeeping');
 const { generateValidPlateNumber, PLATE_REGEX } = require('../utils/plates');
@@ -90,6 +90,7 @@ async function runGeneratorTick(now = new Date()) {
     }
   }
 
+  await enforceAllCapacities(now);
   await trimOpenViolations();
   return results;
 }

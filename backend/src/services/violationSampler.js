@@ -2,7 +2,7 @@ const { GateArea, ParkingEvent, Violation } = require('../models');
 const { isPaidHours } = require('./ruleEngine');
 const { VIOLATION_TYPES, EVENT_FOR_TYPE } = require('./violationTypes');
 const { generateValidPlateNumber } = require('../utils/plates');
-const { MIN_STAY_MINUTES, MAX_STAY_MINUTES, SAMPLE_BATCH_SIZE } = require('./simulationConfig');
+const { SAMPLE_BATCH_SIZE } = require('./simulationConfig');
 
 const SAMPLE_WINDOW_MINUTES = 3 * 60;
 
@@ -24,7 +24,8 @@ function randomViolationDetails(now = new Date()) {
       plateNumber: generateValidPlateNumber(),
       ...EVENT_FOR_TYPE[violationType],
       eventTime,
-      durationMinutes: MIN_STAY_MINUTES + Math.floor(Math.random() * (MAX_STAY_MINUTES - MIN_STAY_MINUTES + 1)),
+      // A detection, not a parked car in the occupancy figures: it must not fill the car park.
+      durationMinutes: 1,
     },
   };
 }

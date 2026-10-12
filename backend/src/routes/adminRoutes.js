@@ -4,6 +4,7 @@ const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { PLATE_PATTERN, normalisePlate } = require('../utils/validation');
 const { VIOLATION_TYPES, EVENT_FOR_TYPE } = require('../services/violationTypes');
 const { replaceOpenViolations } = require('../services/violationSampler');
+const { enforceAllCapacities } = require('../services/occupancy');
 
 const router = express.Router();
 
@@ -80,6 +81,7 @@ router.post('/violations', requireAuth, requireAdmin, async (req, res) => {
     note: note || null,
   });
 
+  await enforceAllCapacities();
   res.status(201).json(await Violation.findByPk(violation.id, { include: WITH_EVENT }));
 });
 
