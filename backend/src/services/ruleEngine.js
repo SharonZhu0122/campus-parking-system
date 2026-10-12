@@ -1,13 +1,17 @@
+const { nzParts } = require('../utils/nzTime');
+
+const PAID_START = 8 * 60 + 30;
+const PAID_END = 16 * 60 + 30;
+
+// weekday: 0 = Sunday ... 6 = Saturday, minutes since midnight, New Zealand time
+function isPaidSlot(weekday, minutesSinceMidnight) {
+  const isWeekday = weekday >= 1 && weekday <= 5;
+  return isWeekday && minutesSinceMidnight >= PAID_START && minutesSinceMidnight <= PAID_END;
+}
+
 function isPaidHours(date) {
-  const day = date.getDay();
-  const isWeekday = day >= 1 && day <= 5;
-
-  const minutesSinceMidnight = date.getHours() * 60 + date.getMinutes();
-  const paidHoursStart = 8 * 60 + 30;
-  const paidHoursEnd = 16 * 60 + 30;
-  const isWithinPaidHours = minutesSinceMidnight >= paidHoursStart && minutesSinceMidnight <= paidHoursEnd;
-
-  return isWeekday && isWithinPaidHours;
+  const { weekday, hour, minute } = nzParts(date);
+  return isPaidSlot(weekday, hour * 60 + minute);
 }
 
 function checkViolations(event) {
@@ -29,4 +33,4 @@ function checkViolations(event) {
   return violations;
 }
 
-module.exports = { checkViolations, isPaidHours };
+module.exports = { checkViolations, isPaidHours, isPaidSlot };

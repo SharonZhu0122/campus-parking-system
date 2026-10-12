@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const { GateArea, ParkingEvent, Violation } = require('../models');
 const { checkViolations, isPaidHours } = require('./ruleEngine');
+const config = require('./simulationConfig');
 
 const PLATE_REGEX = /^[A-Z]{3}\d{3}$/;
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -29,9 +30,10 @@ function generateValidPlateNumber() {
 
 function pickEventCount(date) {
   if (isPaidHours(date)) {
-    return Math.floor(Math.random() * 3) + 1;
+    const range = config.PAID_EVENTS_MAX - config.PAID_EVENTS_MIN + 1;
+    return Math.floor(Math.random() * range) + config.PAID_EVENTS_MIN;
   }
-  return Math.random() < 0.3 ? 1 : 0;
+  return Math.random() < config.OFF_PEAK_CHANCE ? 1 : 0;
 }
 
 function pickParkType() {
@@ -57,7 +59,8 @@ function pickMobilityCardValid(parkType) {
 }
 
 function pickDurationMinutes() {
-  return Math.floor(Math.random() * (240 - 20 + 1)) + 20;
+  const range = config.MAX_STAY_MINUTES - config.MIN_STAY_MINUTES + 1;
+  return Math.floor(Math.random() * range) + config.MIN_STAY_MINUTES;
 }
 
 async function createRandomEvent(gate) {
@@ -109,5 +112,6 @@ module.exports = {
   startDataGenerator,
   runGeneratorTick,
   generateValidPlateNumber,
+  pickEventCount,
   PLATE_REGEX,
 };

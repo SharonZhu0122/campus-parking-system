@@ -1,5 +1,6 @@
 const express = require('express');
 const { GateArea } = require('../models');
+const { typicalWeek, describeNow } = require('../services/typicalDay');
 const { getGateOccupancy, getOccupancySeries } = require('../services/occupancy');
 const {
   movingAverage,
@@ -17,6 +18,25 @@ router.get('/', async (req, res) => {
 router.get('/:id/occupancy', async (req, res) => {
   const occupancy = await getGateOccupancy(req.params.id);
   res.json(occupancy);
+});
+
+router.get('/:id/busyness', async (req, res) => {
+  const gate = await GateArea.findByPk(req.params.id);
+  if (!gate) {
+    return res.status(404).json({ error: 'gate not found' });
+  }
+
+  const gateCount = await GateArea.count();
+  const { occupied } = await getGateOccupancy(gate.id);
+
+  res.json({
+    gateId: gate.id,
+    gateName: gate.name,
+    totalParks: gate.totalParks,
+    now: describeNow({ occupied, totalParks: gate.totalParks, gateCount }),
+    typicalWeek: typicalWeek(gateCount),
+    basedOn: 'simulated data',
+  });
 });
 
 const PREDICTION_WINDOW = 3;

@@ -67,6 +67,14 @@ export async function getPredictions(gateId) {
   return response.json();
 }
 
+export async function getBusyness(gateId) {
+  const response = await fetch(`${API_BASE}/api/gates/${gateId}/busyness`);
+  if (!response.ok) {
+    throw new Error('Could not load busy times');
+  }
+  return response.json();
+}
+
 export async function getMyVehicle() {
   const response = await fetch(`${API_BASE}/api/me/vehicle`, { headers: authHeaders() });
   if (!response.ok) {
