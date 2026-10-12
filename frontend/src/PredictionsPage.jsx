@@ -158,17 +158,15 @@ function busyWord(relative) {
   return 'Quiet';
 }
 
-function compareSentence(now) {
-  const when = `${DAYS.find((d) => d.weekday === now.weekday).long} at ${formatClock(now.hour)}`;
-  if (now.comparison === 'busier') return `Busier than usual for ${when}.`;
-  if (now.comparison === 'quieter') return `Quieter than usual for ${when}.`;
-  return `About as busy as usual for ${when}.`;
-}
+// Only worth saying when something is out of the ordinary.
+const COMPARE_TEXT = {
+  busier: 'Busier than usual',
+  quieter: 'Quieter than usual',
+};
 
 const NEXT_HOUR = {
-  busier: { arrow: '↗', text: 'Expected to get busier over the next hour' },
-  quieter: { arrow: '↘', text: 'Expected to get quieter over the next hour' },
-  steady: { arrow: '→', text: 'Expected to stay about the same over the next hour' },
+  busier: { arrow: '\u2197', text: 'Getting busier' },
+  quieter: { arrow: '\u2198', text: 'Getting quieter' },
 };
 
 function adviceFor(hours) {
@@ -321,11 +319,17 @@ function PredictionsPage({ onBack, backLabel = 'Back to occupancy' }) {
               <span className={`busy-status status-${now.status}`}>{STATUS_TEXT[now.status]}</span>
               <span className={`occupancy-percent level-${occupancyLevel(now.occupancyPercent)}`}>{now.available}</span>
               <span className="pred-note">spaces free out of {busy.totalParks}</span>
-              <p className="busy-compare">{compareSentence(now)}</p>
-              <p className="busy-next">
-                <span className="busy-arrow" aria-hidden="true">{NEXT_HOUR[now.nextHour].arrow}</span>
-                {NEXT_HOUR[now.nextHour].text}.
-              </p>
+              {(COMPARE_TEXT[now.comparison] || NEXT_HOUR[now.nextHour]) && (
+                <p className="busy-notes">
+                  {COMPARE_TEXT[now.comparison] && <span>{COMPARE_TEXT[now.comparison]}</span>}
+                  {NEXT_HOUR[now.nextHour] && (
+                    <span>
+                      <span className="busy-arrow" aria-hidden="true">{NEXT_HOUR[now.nextHour].arrow}</span>
+                      {NEXT_HOUR[now.nextHour].text}
+                    </span>
+                  )}
+                </p>
+              )}
             </section>
 
             <section className="busy-chart-card" aria-label="Usual busy times">

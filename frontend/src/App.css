@@ -1379,16 +1379,14 @@ body {
   color: var(--waikato-red);
 }
 
-.busy-compare {
+.busy-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   margin: 10px 0 0;
+  font-size: 14px;
   font-weight: 600;
   color: var(--waikato-dark-grey);
-}
-
-.busy-next {
-  margin: 0;
-  font-size: 14px;
-  color: #555;
 }
 
 .busy-arrow {
