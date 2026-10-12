@@ -22,8 +22,9 @@ const FRIENDLY_ERROR = 'Could not load parking data. Trying again shortly.';
 // there. Gate 3A/3B and Gate 10 don't, so those link to the nearest named
 // landmark instead — still close enough to be useful for wayfinding.
 // Map thumbnails are generated from the official campus map with each gate's
-// lot highlighted. Gate 1's lot is inferred: it's the largest on the map and
-// sits on Knighton Road, matching Gate 1's capacity (487) — worth confirming.
+// lot highlighted. Gate 1 is inferred: the striped lot on Knighton Road plus the
+// two car parks above it (by the Student Village and Unirec), which together
+// match Gate 1's capacity (487) — worth confirming.
 const GATE_LOCATIONS = {
   'Gate 1': {
     description: 'Off Knighton Road, by The Pā.',
