@@ -4,6 +4,7 @@ const GateArea = require('./GateArea');
 const ParkingEvent = require('./ParkingEvent');
 const Violation = require('./Violation');
 const Inquiry = require('./Inquiry');
+const PasswordReset = require('./PasswordReset');
 
 module.exports = {
   sequelize,
@@ -12,4 +13,5 @@ module.exports = {
   ParkingEvent,
   Violation,
   Inquiry,
+  PasswordReset,
 };

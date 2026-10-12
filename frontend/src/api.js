@@ -104,6 +104,14 @@ export function changePassword(currentPassword, newPassword) {
   return sendJson('/api/me/password', 'PUT', { currentPassword, newPassword }, 'Could not change your password');
 }
 
+export function requestPasswordReset(email) {
+  return sendJson('/api/forgot-password', 'POST', { email }, 'Could not send the reset email');
+}
+
+export function resetPassword(token, newPassword) {
+  return sendJson('/api/reset-password', 'POST', { token, newPassword }, 'Could not reset your password');
+}
+
 export async function getAlerts() {
   // ?today=YYYY-MM-DD on the page address previews the banner on another date.
   const preview = new URLSearchParams(window.location.search).get('today');

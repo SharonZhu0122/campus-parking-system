@@ -7,14 +7,38 @@ import PredictionsPage from './PredictionsPage';
 import InquiriesPage from './InquiriesPage';
 import MyVehiclePage from './MyVehiclePage';
 import AccountPage from './AccountPage';
+import ForgotPasswordPage from './ForgotPasswordPage';
+import ResetPasswordPage from './ResetPasswordPage';
 import './App.css';
+
+// The emailed reset link opens the site as /?reset=<token>.
+function readResetToken() {
+  return new URLSearchParams(window.location.search).get('reset') || '';
+}
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [loggedInRole, setLoggedInRole] = useState(null);
-  const [view, setView] = useState('occupancy');
+  const [resetToken] = useState(readResetToken);
+  const [view, setView] = useState(resetToken ? 'resetPassword' : 'occupancy');
   const [registeredUsername, setRegisteredUsername] = useState('');
   const [predictionsBack, setPredictionsBack] = useState('occupancy');
+
+  if (view === 'resetPassword') {
+    return (
+      <ResetPasswordPage
+        token={resetToken}
+        onDone={() => {
+          window.history.replaceState(null, '', window.location.pathname);
+          setView('login');
+        }}
+      />
+    );
+  }
+
+  if (view === 'forgotPassword') {
+    return <ForgotPasswordPage onBack={() => setView('login')} />;
+  }
 
   if (view === 'login' || view === 'adminLogin') {
     return (
@@ -26,6 +50,7 @@ function App() {
           setView('occupancy');
         }}
         onSwitchToRegister={() => setView('register')}
+        onForgotPassword={() => setView('forgotPassword')}
         registeredUsername={registeredUsername}
         onBack={() => setView('occupancy')}
       />

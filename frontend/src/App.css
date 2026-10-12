@@ -1358,3 +1358,28 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Forgot / reset password */
+.forgot-link {
+  align-self: center;
+  font-size: 14px;
+}
+
+.form-success {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--level-low);
+}
+
+.reset-login-button {
+  padding: 11px;
+  border: none;
+  border-radius: 4px;
+  background: var(--waikato-red);
+  color: white;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}

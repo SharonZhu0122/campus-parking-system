@@ -8,6 +8,7 @@ const inquiryRoutes = require('./routes/inquiryRoutes');
 const assistantRoutes = require('./routes/assistantRoutes');
 const alertRoutes = require('./routes/alertRoutes');
 const meRoutes = require('./routes/meRoutes');
+const passwordResetRoutes = require('./routes/passwordResetRoutes');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -19,6 +20,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api', authRoutes);
+app.use('/api', passwordResetRoutes);
 app.use('/api/gates', gateRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/inquiries', inquiryRoutes);

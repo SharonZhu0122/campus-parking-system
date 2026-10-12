@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { login } from './api';
 import AuthLogo from './AuthLogo';
 
-function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onBack, isAdmin }) {
+function LoginPage({ onLoginSuccess, onSwitchToRegister, onForgotPassword, registeredUsername, onBack, isAdmin }) {
   const [username, setUsername] = useState(registeredUsername || '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -55,6 +55,11 @@ function LoginPage({ onLoginSuccess, onSwitchToRegister, registeredUsername, onB
         <button type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Log in'}
         </button>
+        {!isAdmin && (
+          <button type="button" className="link-button forgot-link" onClick={onForgotPassword}>
+            Forgot your password?
+          </button>
+        )}
         {!isAdmin && (
           <p className="switch-link">
             Don&apos;t have an account?{' '}
