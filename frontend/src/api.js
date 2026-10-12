@@ -50,13 +50,29 @@ function authHeaders() {
 }
 
 export async function getViolations() {
-  const response = await fetch(`${API_BASE}/api/admin/violations`, {
+  const response = await fetch(`${API_BASE}/api/admin/violations?limit=100`, {
     headers: authHeaders(),
   });
   if (!response.ok) {
     throw new Error('Could not load violations');
   }
   return response.json();
+}
+
+export async function getViolationSummary() {
+  const response = await fetch(`${API_BASE}/api/admin/violations/summary`, { headers: authHeaders() });
+  if (!response.ok) {
+    throw new Error('Could not load violation totals');
+  }
+  return response.json();
+}
+
+export function createViolation(details) {
+  return sendJson('/api/admin/violations', 'POST', details, 'Could not add the violation');
+}
+
+export function updateViolation(id, changes) {
+  return sendJson(`/api/admin/violations/${id}`, 'PATCH', changes, 'Could not save the changes');
 }
 
 export async function getPredictions(gateId) {

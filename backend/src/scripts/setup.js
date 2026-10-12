@@ -32,6 +32,11 @@ async function setup() {
   await sequelize.sync();
   await addColumnIfMissing('Violations', 'notificationSent BOOLEAN NOT NULL DEFAULT false');
   await addColumnIfMissing('Violations', 'notifiedContact VARCHAR(255)');
+  await addColumnIfMissing('Violations', "source VARCHAR(20) NOT NULL DEFAULT 'automatic'");
+  await addColumnIfMissing('Violations', 'createdBy VARCHAR(255)');
+  await addColumnIfMissing('Violations', 'note TEXT');
+  await addColumnIfMissing('Violations', 'editedBy VARCHAR(255)');
+  await addColumnIfMissing('Violations', 'editedAt DATETIME');
   await addColumnIfMissing('Users', 'plateNumber VARCHAR(255)');
   await addColumnIfMissing('Users', 'contactEmail VARCHAR(255)');
   await addColumnIfMissing('Users', 'phoneNumber VARCHAR(255)');

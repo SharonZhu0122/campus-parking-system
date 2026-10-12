@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
-import { getViolations, resolveViolation } from './api';
+import { createViolation, getGates, getViolations, getViolationSummary, resolveViolation, updateViolation } from './api';
 import BrandMark from './BrandMark';
 
-const DISPLAY_LIMIT = 100;
+const VIOLATION_OPTIONS = Object.entries({
+  reserved_violation: 'Reserved space violation',
+  unpaid_violation: 'Unpaid during paid hours',
+  mobility_violation: 'Mobility park violation',
+});
 
 const RESOLUTION_LABELS = {
   ticket_issued: 'Ticket issued',
@@ -16,24 +20,109 @@ const VIOLATION_LABELS = {
   mobility_violation: 'Mobility park violation',
 };
 
+// Used both to add a violation found on patrol and to correct an open one.
+function ViolationForm({ gates, editing, onClose, onSaved }) {
+  const isEdit = Boolean(editing);
+  const [plateNumber, setPlateNumber] = useState(isEdit ? editing.ParkingEvent.plateNumber : '');
+  const [gateAreaId, setGateAreaId] = useState(gates[0] ? String(gates[0].id) : '');
+  const [violationType, setViolationType] = useState(isEdit ? editing.violationType : 'reserved_violation');
+  const [note, setNote] = useState(isEdit ? editing.note || '' : '');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError('');
+    setSaving(true);
+    try {
+      const saved = isEdit
+        ? await updateViolation(editing.id, { plateNumber, violationType, note })
+        : await createViolation({ plateNumber, gateAreaId: Number(gateAreaId), violationType, note });
+      onSaved(saved);
+    } catch (err) {
+      setError(err.message);
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="modal-overlay">
+      <form className="modal-box violation-form" onSubmit={handleSubmit}>
+        <h2>{isEdit ? 'Edit violation' : 'Add violation'}</h2>
+        <p className="violation-form-hint">
+          {isEdit
+            ? 'Correct a mistake in an open violation. Resolved violations cannot be edited.'
+            : 'Record something you found on patrol. It can be resolved like any other violation.'}
+        </p>
+        <div className="field">
+          <label htmlFor="vf-plate">Plate number</label>
+          <input id="vf-plate" type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} maxLength={8} required />
+        </div>
+        {!isEdit && (
+          <div className="field">
+            <label htmlFor="vf-gate">Gate</label>
+            <select id="vf-gate" value={gateAreaId} onChange={(e) => setGateAreaId(e.target.value)}>
+              {gates.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+        <div className="field">
+          <label htmlFor="vf-type">What was found</label>
+          <select id="vf-type" value={violationType} onChange={(e) => setViolationType(e.target.value)}>
+            {VIOLATION_OPTIONS.map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="field">
+          <label htmlFor="vf-note">Note (optional)</label>
+          <textarea id="vf-note" value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} rows={3} />
+        </div>
+        {error && <p className="error">{error}</p>}
+        <div className="violation-form-actions">
+          <button type="submit" disabled={saving}>{saving ? 'Saving...' : isEdit ? 'Save changes' : 'Add violation'}</button>
+          <button type="button" className="link-button" onClick={onClose}>Cancel</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
   const [violations, setViolations] = useState([]);
+  const [totals, setTotals] = useState({ total: 0, unresolved: 0 });
+  const [gates, setGates] = useState([]);
+  const [formMode, setFormMode] = useState(null); // null, 'add' or a violation being edited
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [pendingChoice, setPendingChoice] = useState({});
   const [notificationModal, setNotificationModal] = useState(null);
 
-  useEffect(() => {
-    getViolations()
-      .then((data) => {
+  function loadAll() {
+    return Promise.all([getViolations(), getViolationSummary(), getGates()])
+      .then(([data, summary, gateList]) => {
         setViolations(data);
+        setTotals(summary);
+        setGates(gateList);
         setLoading(false);
       })
       .catch((err) => {
         setError(err.message);
         setLoading(false);
       });
+  }
+
+  useEffect(() => {
+    loadAll();
   }, []);
+
+  function handleSaved() {
+    setFormMode(null);
+    setError('');
+    loadAll();
+  }
 
   async function handleResolve(id) {
     const resolutionType = pendingChoice[id];
@@ -44,6 +133,7 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
     try {
       const updated = await resolveViolation(id, resolutionType);
       setViolations((prev) => prev.map((v) => (v.id === id ? { ...v, ...updated } : v)));
+      setTotals((prev) => ({ ...prev, unresolved: Math.max(prev.unresolved - 1, 0) }));
       setError('');
       if (resolutionType === 'ticket_issued') {
         setNotificationModal(
@@ -57,8 +147,6 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
     }
   }
 
-  const unresolvedCount = violations.filter((v) => !v.resolved).length;
-  const visible = violations.slice(0, DISPLAY_LIMIT);
 
   return (
     <div className="occupancy-page">
@@ -82,13 +170,16 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
       <main className="page-content admin-content">
         <h1>Violations</h1>
         <p className="subtitle">
-          {loading
-            ? 'Loading...'
-            : `${unresolvedCount} unresolved out of ${violations.length} total`}
+          {loading ? 'Loading...' : `${totals.unresolved} unresolved out of ${totals.total} total`}
         </p>
         {error && <p className="error">{error}</p>}
-        {!loading && violations.length > DISPLAY_LIMIT && (
-          <p className="subtitle">Showing the most recent {DISPLAY_LIMIT}.</p>
+        {!loading && (
+          <div className="violations-toolbar">
+            <span className="subtitle">Showing the most recent {violations.length}.</span>
+            <button type="button" className="add-violation" onClick={() => setFormMode('add')}>
+              Add violation
+            </button>
+          </div>
         )}
         {!loading && (
           <div className="table-wrapper">
@@ -104,11 +195,22 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
                 </tr>
               </thead>
               <tbody>
-                {visible.map((v) => (
+                {violations.map((v) => (
                   <tr key={v.id}>
                     <td>{v.ParkingEvent.plateNumber}</td>
                     <td>{v.ParkingEvent.GateArea.name}</td>
-                    <td>{VIOLATION_LABELS[v.violationType] || v.violationType}</td>
+                    <td>
+                      {VIOLATION_LABELS[v.violationType] || v.violationType}
+                      {v.note && <div className="resolution-note">Note: {v.note}</div>}
+                      {v.source === 'manual' && (
+                        <div className="resolution-note">Added by {v.createdBy} (patrol)</div>
+                      )}
+                      {v.editedBy && (
+                        <div className="resolution-note">
+                          Edited by {v.editedBy}, {new Date(v.editedAt).toLocaleString()}
+                        </div>
+                      )}
+                    </td>
                     <td>{new Date(v.createdAt).toLocaleString()}</td>
                     <td>
                       <span className={`status-badge ${v.resolved ? 'resolved' : 'unresolved'}`}>
@@ -156,6 +258,9 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
                           >
                             Resolve
                           </button>
+                          <button type="button" className="link-button" onClick={() => setFormMode(v)}>
+                            Edit
+                          </button>
                         </div>
                       )}
                     </td>
@@ -166,6 +271,15 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
           </div>
         )}
       </main>
+
+      {formMode && (
+        <ViolationForm
+          gates={gates}
+          editing={formMode === 'add' ? null : formMode}
+          onClose={() => setFormMode(null)}
+          onSaved={handleSaved}
+        />
+      )}
 
       {notificationModal && (
         <div className="modal-overlay">

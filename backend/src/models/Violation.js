@@ -33,6 +33,28 @@ const Violation = sequelize.define('Violation', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  // 'automatic' = found by the rule engine, 'manual' = entered by staff after a patrol
+  source: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    defaultValue: 'automatic',
+  },
+  createdBy: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  note: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  editedBy: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  editedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
 });
 
 ParkingEvent.hasMany(Violation, { foreignKey: 'parkingEventId' });
