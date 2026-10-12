@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { createViolation, getGates, getViolations, getViolationSummary, resolveViolation, updateViolation } from './api';
 import BrandMark from './BrandMark';
 
+const REFRESH_MS = 10000;
+
 const VIOLATION_OPTIONS = Object.entries({
   reserved_violation: 'Reserved space violation',
   unpaid_violation: 'Unpaid during paid hours',
@@ -94,6 +96,7 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
   const [violations, setViolations] = useState([]);
   const [totals, setTotals] = useState({ total: 0, unresolved: 0, resolved: 0 });
   const [tab, setTab] = useState('open'); // 'open' or 'resolved'
+  const [lastUpdated, setLastUpdated] = useState(null);
   const [gates, setGates] = useState([]);
   const [formMode, setFormMode] = useState(null); // null, 'add' or a violation being edited
   const [loading, setLoading] = useState(true);
@@ -101,16 +104,18 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
   const [pendingChoice, setPendingChoice] = useState({});
   const [notificationModal, setNotificationModal] = useState(null);
 
-  function loadAll(status = tab) {
+  function loadAll(status = tab, { silent = false } = {}) {
     return Promise.all([getViolations(status), getViolationSummary(), getGates()])
       .then(([data, summary, gateList]) => {
         setViolations(data);
         setTotals(summary);
         setGates(gateList);
+        setLastUpdated(new Date());
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        // A failed background refresh keeps what is already on screen.
+        if (!silent) setError(err.message);
         setLoading(false);
       });
   }
@@ -119,6 +124,17 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
     loadAll(tab);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
+
+  // Pick up new violations without a reload, unless a form or message is open.
+  const busyWithDialog = Boolean(formMode) || Boolean(notificationModal);
+  useEffect(() => {
+    if (busyWithDialog) return undefined;
+    const id = setInterval(() => {
+      if (!document.hidden) loadAll(tab, { silent: true });
+    }, REFRESH_MS);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, busyWithDialog]);
 
   function handleSaved() {
     setFormMode(null);
@@ -190,6 +206,7 @@ function AdminPage({ onBack, onPredictionsClick, onInquiriesClick }) {
               {violations.length === 0
                 ? tab === 'open' ? 'Nothing is waiting. Every violation has been handled.' : 'No violations have been handled yet.'
                 : `Showing the most recent ${violations.length}.`}
+              {lastUpdated && <span className="admin-updated"> Updated {lastUpdated.toLocaleTimeString()}</span>}
             </span>
             <button type="button" className="add-violation" onClick={() => setFormMode('add')}>
               Add violation

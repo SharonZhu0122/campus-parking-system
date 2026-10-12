@@ -28,4 +28,19 @@ module.exports = {
 
   // Each real day is a little busier or quieter than the average day.
   DAY_NOISE: 0.15,
+
+  // How the cars parked. Most park correctly, so violations are rare: about
+  // one car in a hundred, or roughly twenty a day across the campus.
+  PARK_TYPE_WEIGHTS: [
+    { type: 'standard', weight: 97 },
+    { type: 'reserved', weight: 0.5 }, // a car in a reserved bay is always a violation
+    { type: 'mobility', weight: 1 },
+    { type: 'motorbike', weight: 1.5 },
+  ],
+  UNPAID_CHANCE: 0.005, // during paid hours
+  INVALID_MOBILITY_CARD_CHANCE: 0.15,
+
+  // Detections nobody has handled expire, so the open list stays short.
+  // Violations that staff entered themselves are never removed.
+  MAX_OPEN_AUTOMATIC_VIOLATIONS: 20,
 };

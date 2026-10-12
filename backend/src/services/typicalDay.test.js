@@ -109,3 +109,13 @@ test('describeNow uses New Zealand time', () => {
   expect(day.status).toBe('plenty');
   expect(day.available).toBe(80);
 });
+
+test('violations are rare in the simulation', () => {
+  const config = require('./simulationConfig');
+  const total = config.PARK_TYPE_WEIGHTS.reduce((sum, w) => sum + w.weight, 0);
+  const share = (type) => config.PARK_TYPE_WEIGHTS.find((w) => w.type === type).weight / total;
+  // reserved is always a violation; unpaid and invalid mobility card are small chances
+  const violationShare = share('reserved') + share('standard') * config.UNPAID_CHANCE + share('mobility') * config.INVALID_MOBILITY_CARD_CHANCE;
+  expect(violationShare).toBeLessThan(0.02);
+  expect(violationShare).toBeGreaterThan(0.003);
+});

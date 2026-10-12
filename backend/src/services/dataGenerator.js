@@ -5,16 +5,10 @@ const config = require('./simulationConfig');
 const { createGateModel, dayNoise } = require('./typicalDay');
 const { getGateOccupancy } = require('./occupancy');
 const { nzParts } = require('../utils/nzTime');
+const { trimOpenViolations } = require('./violationHousekeeping');
 
 const PLATE_REGEX = /^[A-Z]{3}\d{3}$/;
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-const PARK_TYPE_WEIGHTS = [
-  { type: 'standard', weight: 70 },
-  { type: 'reserved', weight: 10 },
-  { type: 'mobility', weight: 10 },
-  { type: 'motorbike', weight: 10 },
-];
 
 function generatePlateCandidate() {
   const letters = Array.from({ length: 3 }, () => LETTERS[Math.floor(Math.random() * LETTERS.length)]).join('');
@@ -46,9 +40,9 @@ function sampleEventCount(mean) {
 }
 
 function pickParkType() {
-  const total = PARK_TYPE_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
+  const total = config.PARK_TYPE_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
   let random = Math.random() * total;
-  for (const item of PARK_TYPE_WEIGHTS) {
+  for (const item of config.PARK_TYPE_WEIGHTS) {
     if (random < item.weight) return item.type;
     random -= item.weight;
   }
@@ -59,12 +53,12 @@ function pickPaymentStatus(parkType, date) {
   if (parkType === 'motorbike' || !isPaidHours(date)) {
     return 'not_required';
   }
-  return Math.random() < 0.85 ? 'paid' : 'unpaid';
+  return Math.random() < config.UNPAID_CHANCE ? 'unpaid' : 'paid';
 }
 
 function pickMobilityCardValid(parkType) {
   if (parkType !== 'mobility') return null;
-  return Math.random() < 0.85;
+  return Math.random() >= config.INVALID_MOBILITY_CARD_CHANCE;
 }
 
 function pickDurationMinutes() {
@@ -112,6 +106,8 @@ async function runGeneratorTick(now = new Date()) {
       results.push(await createRandomEvent(gate, now));
     }
   }
+
+  await trimOpenViolations();
   return results;
 }
 

@@ -24,9 +24,20 @@ function MyVehiclePage({ onBack, onAccountClick }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getMyVehicle()
-      .then(setData)
-      .catch((err) => setError(err.message));
+    function load() {
+      getMyVehicle()
+        .then((result) => {
+          setData(result);
+          setError('');
+        })
+        .catch((err) => setError(err.message));
+    }
+    load();
+    // Status changes (for example a ticket being issued) show up without a reload.
+    const id = setInterval(() => {
+      if (!document.hidden) load();
+    }, 15000);
+    return () => clearInterval(id);
   }, []);
 
   const openCount = data ? data.violations.filter((v) => !v.resolved).length : 0;
