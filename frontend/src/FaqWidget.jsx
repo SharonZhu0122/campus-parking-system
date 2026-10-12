@@ -4,7 +4,7 @@ import { askAssistant, submitInquiry } from './api';
 const FAQ_ITEMS = [
   {
     q: 'How much does parking cost, and when is it free?',
-    a: 'Paid hours are 8:30am to 4:30pm, Monday to Friday. Parking is free outside these hours, including all day on weekends. Motorbikes are free at all times. Payment is made through the PayMyPark app or website.',
+    a: 'Parking costs $3 for a day, $9 for a week or $90 for a trimester pass (University of Waikato rates; PayMyPark service fees are extra). Paid hours are 8:30am to 4:30pm, Monday to Friday. Parking is free outside these hours, including all day on weekends. Motorbikes are free at all times. Prices can change, so confirm on PayMyPark.',
     link: { text: 'Pay on PayMyPark', url: 'https://www.paymypark.com/' },
   },
   {

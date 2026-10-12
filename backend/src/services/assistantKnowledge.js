@@ -15,7 +15,13 @@ PAYMENT AND HOURS
 - Motorbike parks are free at all times.
 - Payment is made through the PayMyPark app or website: https://www.paymypark.com/
 - Payment is valid across the whole campus. If you pay while selecting Gate 1, you may still park at any of the other public gates.
-- The actual price per hour or per day is NOT known to this assistant. Tell people to check PayMyPark for current prices.
+- General parking charges at the Hamilton campus (from the University of Waikato "Drive to campus" page, in effect since 1 February 2025): $3 for one day (24 hours from the time of purchase), $9 for one week (seven consecutive days), and $90 for a trimester pass (A or B trimester concession, expires at the end of the trimester; it does not guarantee a space).
+- There is no hourly rate. Parking is sold by the day, week or trimester.
+- Charges apply on weekdays 8:30am to 4:30pm, excluding public holidays.
+- These charges do NOT include PayMyPark service and transaction fees. Loading the PayMyPark account less often, or buying a weekly or trimester pass, reduces those fees.
+- In the PayMyPark app, choose The University of Waikato, because the app may default to Hamilton City Council.
+- Prices can change, so always tell people to confirm the current price on PayMyPark or the university's "Drive to campus" page.
+- If the unpaid warning is ignored, staff may wheel-clamp the car and a fee is charged to remove the clamp. The amount of that fee is NOT known to this assistant.
 
 RESERVED, PERMIT AND MOBILITY PARKS
 - Numbered or named parks are reserved for permit holders at all times. Parking there without a permit may result in wheel-clamping.
