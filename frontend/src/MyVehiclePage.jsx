@@ -19,7 +19,7 @@ function statusOf(v) {
   return { text: RESOLUTION_LABELS[v.resolutionType] || 'Closed', className: 'resolved' };
 }
 
-function MyVehiclePage({ onBack }) {
+function MyVehiclePage({ onBack, onAccountClick }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
 
@@ -37,9 +37,14 @@ function MyVehiclePage({ onBack }) {
       <header className="top-bar">
         <div className="top-bar-inner">
           <BrandMark />
-          <button type="button" className="top-bar-link" onClick={onBack}>
-            Back to occupancy
-          </button>
+          <span className="top-bar-actions">
+            <button type="button" className="top-bar-link" onClick={onAccountClick}>
+              Account settings
+            </button>
+            <button type="button" className="top-bar-link" onClick={onBack}>
+              Back to occupancy
+            </button>
+          </span>
         </div>
       </header>
 

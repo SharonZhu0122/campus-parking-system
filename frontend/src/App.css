@@ -1291,3 +1291,70 @@ body {
     padding: 5px 10px;
   }
 }
+
+/* Account settings page */
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 880px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.account-card {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 8px;
+  border-top: 4px solid var(--waikato-red);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.account-card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--waikato-dark-grey);
+}
+
+.account-hint {
+  margin: -8px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.account-card button[type='submit'] {
+  padding: 11px;
+  border: none;
+  border-radius: 4px;
+  background: var(--waikato-red);
+  color: white;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.account-card button[type='submit']:hover:not(:disabled) {
+  background: var(--waikato-red-light);
+}
+
+.account-card button[type='submit']:disabled {
+  background: #cf9a9a;
+  cursor: not-allowed;
+}
+
+.account-card .success {
+  margin: 0;
+  font-size: 14px;
+  color: var(--level-low);
+}
+
+@media (max-width: 720px) {
+  .account-grid {
+    grid-template-columns: 1fr;
+  }
+}

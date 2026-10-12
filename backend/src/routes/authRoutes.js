@@ -2,17 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const { PLATE_PATTERN, EMAIL_PATTERN, PHONE_PATTERN, normalisePlate } = require('../utils/validation');
 
 const router = express.Router();
-
-// NZ plates are up to 6 letters/digits, including personalised ones.
-const PLATE_PATTERN = /^[A-Z0-9]{2,6}$/;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_PATTERN = /^\+?[0-9][0-9\s-]{6,18}$/;
-
-function normalisePlate(plate) {
-  return String(plate).toUpperCase().replace(/[\s-]/g, '');
-}
 
 router.post('/register', async (req, res) => {
   const { username, password, plateNumber, contactEmail, phoneNumber } = req.body;

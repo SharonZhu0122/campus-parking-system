@@ -6,6 +6,7 @@ import AdminPage from './AdminPage';
 import PredictionsPage from './PredictionsPage';
 import InquiriesPage from './InquiriesPage';
 import MyVehiclePage from './MyVehiclePage';
+import AccountPage from './AccountPage';
 import './App.css';
 
 function App() {
@@ -62,7 +63,11 @@ function App() {
   }
 
   if (view === 'myVehicle') {
-    return <MyVehiclePage onBack={() => setView('occupancy')} />;
+    return <MyVehiclePage onBack={() => setView('occupancy')} onAccountClick={() => setView('account')} />;
+  }
+
+  if (view === 'account') {
+    return <AccountPage onBack={() => setView('myVehicle')} />;
   }
 
   if (view === 'inquiries') {

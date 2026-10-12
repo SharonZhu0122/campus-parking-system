@@ -75,6 +75,35 @@ export async function getMyVehicle() {
   return response.json();
 }
 
+async function sendJson(path, method, body, fallbackMessage) {
+  const response = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || fallbackMessage);
+  }
+  return data;
+}
+
+export async function getProfile() {
+  const response = await fetch(`${API_BASE}/api/me/profile`, { headers: authHeaders() });
+  if (!response.ok) {
+    throw new Error('Could not load your account. Please log in again.');
+  }
+  return response.json();
+}
+
+export function updateProfile(changes) {
+  return sendJson('/api/me/profile', 'PATCH', changes, 'Could not save your changes');
+}
+
+export function changePassword(currentPassword, newPassword) {
+  return sendJson('/api/me/password', 'PUT', { currentPassword, newPassword }, 'Could not change your password');
+}
+
 export async function getAlerts() {
   // ?today=YYYY-MM-DD on the page address previews the banner on another date.
   const preview = new URLSearchParams(window.location.search).get('today');
