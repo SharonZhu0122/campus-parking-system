@@ -1,6 +1,6 @@
 const express = require('express');
 const { GateArea } = require('../models');
-const { typicalWeek, describeNow } = require('../services/typicalDay');
+const { createGateModel, describeNow } = require('../services/typicalDay');
 const { getGateOccupancy, getOccupancySeries } = require('../services/occupancy');
 const {
   movingAverage,
@@ -26,15 +26,15 @@ router.get('/:id/busyness', async (req, res) => {
     return res.status(404).json({ error: 'gate not found' });
   }
 
-  const gateCount = await GateArea.count();
+  const model = createGateModel(gate);
   const { occupied } = await getGateOccupancy(gate.id);
 
   res.json({
     gateId: gate.id,
     gateName: gate.name,
     totalParks: gate.totalParks,
-    now: describeNow({ occupied, totalParks: gate.totalParks, gateCount }),
-    typicalWeek: typicalWeek(gateCount),
+    now: describeNow({ occupied, totalParks: gate.totalParks, model }),
+    typicalWeek: model.typicalWeek(),
     basedOn: 'simulated data',
   });
 });

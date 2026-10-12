@@ -1,54 +1,82 @@
 const {
-  expectedOccupied,
-  typicalWeek,
+  createGateModel,
   describeNow,
+  dayNoise,
   statusFor,
   compareWithUsual,
   nextHourTrend,
 } = require('./typicalDay');
-const { pickEventCount } = require('./dataGenerator');
+const { sampleEventCount } = require('./dataGenerator');
 
-const MONDAY = 1;
-const SATURDAY = 6;
+const SUN = 0;
+const MON = 1;
+const TUE = 2;
+const FRI = 5;
+const SAT = 6;
 
-test('midweek lunchtime is much busier than the small hours or a weekend', () => {
-  const lunch = expectedOccupied(MONDAY, 12 * 60 + 30, 5);
-  expect(lunch).toBeGreaterThan(20);
-  expect(lunch).toBeLessThan(32);
-  expect(expectedOccupied(MONDAY, 3 * 60, 5)).toBeLessThan(lunch / 4);
-  expect(expectedOccupied(SATURDAY, 12 * 60, 5)).toBeLessThan(lunch / 4);
+const gate1 = createGateModel({ name: 'Gate 1', totalParks: 487 });
+const gate3b = createGateModel({ name: 'Gate 3B', totalParks: 60 });
+const gate10 = createGateModel({ name: 'Gate 10', totalParks: 281 });
+
+function busiest(model, weekday) {
+  let best = 0;
+  for (let minute = 0; minute < 1440; minute += 15) best = Math.max(best, model.expectedOccupied(weekday, minute));
+  return best;
+}
+
+test('each gate peaks at its own share of capacity on the busiest day', () => {
+  expect(busiest(gate1, TUE) / 487).toBeCloseTo(0.55, 1);
+  expect(busiest(gate3b, TUE) / 60).toBeCloseTo(0.95, 1);
+  expect(busiest(gate10, TUE) / 281).toBeCloseTo(0.3, 1);
 });
 
-test('fills up through the morning and empties after the paid hours end', () => {
-  const at = (h) => expectedOccupied(MONDAY, h * 60, 5);
-  expect(at(7)).toBeLessThan(at(9));
-  expect(at(9)).toBeLessThan(at(12));
-  expect(at(20)).toBeLessThan(at(16));
+test('small gates fill up more than big ones', () => {
+  expect(busiest(gate3b, TUE) / 60).toBeGreaterThan(busiest(gate10, TUE) / 281);
 });
 
-test('the weekly chart has 7 days of 24 hours and the busiest hour is 1', () => {
-  const week = typicalWeek(5);
+test('days differ: Tuesday is busier than Friday, and weekends are quiet', () => {
+  expect(busiest(gate1, TUE)).toBeGreaterThan(busiest(gate1, MON));
+  expect(busiest(gate1, MON)).toBeGreaterThan(busiest(gate1, FRI));
+  expect(busiest(gate1, FRI)).toBeGreaterThan(busiest(gate1, SAT));
+  expect(busiest(gate1, SAT)).toBeGreaterThan(busiest(gate1, SUN));
+});
+
+test('fills up through the morning and empties after the afternoon', () => {
+  const at = (h) => gate1.expectedOccupied(TUE, h * 60);
+  expect(at(3)).toBeLessThan(at(8));
+  expect(at(8)).toBeLessThan(at(10));
+  expect(at(22)).toBeLessThan(at(15) / 3);
+});
+
+test('the weekly chart has 7 days of 24 hours, the busiest hour is 1, and weekdays differ', () => {
+  const week = gate1.typicalWeek();
   expect(week).toHaveLength(7);
   week.forEach((day) => expect(day.hours).toHaveLength(24));
   const all = week.flatMap((d) => d.hours.map((h) => h.relative));
   expect(Math.max(...all)).toBe(1);
   expect(Math.min(...all)).toBeGreaterThanOrEqual(0);
+  const monday = week[MON].hours.map((h) => h.relative).join();
+  const friday = week[FRI].hours.map((h) => h.relative).join();
+  expect(monday).not.toBe(friday);
 });
 
-test('matches the generator: the average cars per run agrees with the model', () => {
+test('sampleEventCount averages out to the requested mean', () => {
   const runs = 20000;
-  const paid = new Date('2026-10-12T12:00:00+13:00');
-  const night = new Date('2026-10-12T23:00:00+13:00');
-  let paidTotal = 0;
-  let nightTotal = 0;
-  for (let i = 0; i < runs; i++) {
-    paidTotal += pickEventCount(paid);
-    nightTotal += pickEventCount(night);
-  }
-  expect(paidTotal / runs).toBeGreaterThan(1.9);
-  expect(paidTotal / runs).toBeLessThan(2.1);
-  expect(nightTotal / runs).toBeGreaterThan(0.26);
-  expect(nightTotal / runs).toBeLessThan(0.34);
+  let total = 0;
+  for (let i = 0; i < runs; i++) total += sampleEventCount(2);
+  expect(total / runs).toBeGreaterThan(1.9);
+  expect(total / runs).toBeLessThan(2.1);
+  expect(sampleEventCount(0)).toBe(0);
+});
+
+test('day noise is steady for a date, varies between dates and stays in range', () => {
+  expect(dayNoise('2026-10-12')).toBe(dayNoise('2026-10-12'));
+  const values = Array.from({ length: 30 }, (_, i) => dayNoise(`2026-10-${String(i + 1).padStart(2, '0')}`));
+  values.forEach((v) => {
+    expect(v).toBeGreaterThanOrEqual(0.85);
+    expect(v).toBeLessThanOrEqual(1.15);
+  });
+  expect(new Set(values.map((v) => v.toFixed(3))).size).toBeGreaterThan(10);
 });
 
 test('status words follow the main page thresholds', () => {
@@ -73,10 +101,10 @@ test('next hour trend', () => {
 
 test('describeNow uses New Zealand time', () => {
   // 10:00 UTC on Monday is 23:00 in Auckland, so it should read as night, not midday.
-  const night = describeNow({ occupied: 3, totalParks: 100, gateCount: 5, now: new Date('2026-10-12T10:00:00Z') });
+  const night = describeNow({ occupied: 3, totalParks: 100, model: gate1, now: new Date('2026-10-12T10:00:00Z') });
   expect(night.hour).toBe(23);
-  expect(night.weekday).toBe(MONDAY);
-  const day = describeNow({ occupied: 20, totalParks: 100, gateCount: 5, now: new Date('2026-10-11T23:00:00Z') });
+  expect(night.weekday).toBe(MON);
+  const day = describeNow({ occupied: 20, totalParks: 100, model: gate1, now: new Date('2026-10-11T23:00:00Z') });
   expect(day.hour).toBe(12);
   expect(day.status).toBe('plenty');
   expect(day.available).toBe(80);

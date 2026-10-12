@@ -3,6 +3,9 @@
 const formatter = new Intl.DateTimeFormat('en-US', {
   timeZone: 'Pacific/Auckland',
   weekday: 'short',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
   hour: 'numeric',
   minute: 'numeric',
   hourCycle: 'h23',
@@ -20,6 +23,7 @@ function nzParts(date) {
     weekday: WEEKDAY_NUMBERS[parts.weekday],
     hour: Number(parts.hour),
     minute: Number(parts.minute),
+    dateKey: `${parts.year}-${parts.month}-${parts.day}`,
   };
 }
 

@@ -1,4 +1,12 @@
+const { Op } = require('sequelize');
 const { GateArea, ParkingEvent } = require('../models');
+const { MAX_STAY_MINUTES } = require('./simulationConfig');
+
+// A car that arrived more than this long before `since` has already left.
+function eventsSince(gateAreaId, since) {
+  const earliest = new Date(since.getTime() - (MAX_STAY_MINUTES + 5) * 60000);
+  return ParkingEvent.findAll({ where: { gateAreaId, eventTime: { [Op.gte]: earliest } } });
+}
 
 function isCurrentlyParked(event, now) {
   const start = new Date(event.eventTime);
@@ -8,9 +16,8 @@ function isCurrentlyParked(event, now) {
 
 async function getGateOccupancy(gateAreaId) {
   const gate = await GateArea.findByPk(gateAreaId);
-  const events = await ParkingEvent.findAll({ where: { gateAreaId } });
-
   const now = new Date();
+  const events = await eventsSince(gateAreaId, now);
   const occupiedCount = events.filter((event) => isCurrentlyParked(event, now)).length;
   const occupancyPercent = Math.round((occupiedCount / gate.totalParks) * 100);
 
@@ -25,9 +32,8 @@ async function getGateOccupancy(gateAreaId) {
 
 async function getOccupancySeries(gateAreaId, bucketHours = 1, numBuckets = 24) {
   const gate = await GateArea.findByPk(gateAreaId);
-  const events = await ParkingEvent.findAll({ where: { gateAreaId } });
-
   const now = new Date();
+  const events = await eventsSince(gateAreaId, new Date(now.getTime() - numBuckets * bucketHours * 60 * 60000));
   const series = [];
   for (let i = numBuckets - 1; i >= 0; i--) {
     const bucketTime = new Date(now.getTime() - i * bucketHours * 60 * 60000);

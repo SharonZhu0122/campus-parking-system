@@ -2,6 +2,9 @@ const cron = require('node-cron');
 const { GateArea, ParkingEvent, Violation } = require('../models');
 const { checkViolations, isPaidHours } = require('./ruleEngine');
 const config = require('./simulationConfig');
+const { createGateModel, dayNoise } = require('./typicalDay');
+const { getGateOccupancy } = require('./occupancy');
+const { nzParts } = require('../utils/nzTime');
 
 const PLATE_REGEX = /^[A-Z]{3}\d{3}$/;
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -28,12 +31,18 @@ function generateValidPlateNumber() {
   return plate;
 }
 
-function pickEventCount(date) {
-  if (isPaidHours(date)) {
-    const range = config.PAID_EVENTS_MAX - config.PAID_EVENTS_MIN + 1;
-    return Math.floor(Math.random() * range) + config.PAID_EVENTS_MIN;
+// Whole number of new cars with the given average (Poisson), so some runs
+// bring none and some bring several.
+function sampleEventCount(mean) {
+  if (mean <= 0) return 0;
+  const limit = Math.exp(-mean);
+  let count = 0;
+  let product = Math.random();
+  while (product > limit) {
+    count += 1;
+    product *= Math.random();
   }
-  return Math.random() < config.OFF_PEAK_CHANCE ? 1 : 0;
+  return count;
 }
 
 function pickParkType() {
@@ -63,8 +72,7 @@ function pickDurationMinutes() {
   return Math.floor(Math.random() * range) + config.MIN_STAY_MINUTES;
 }
 
-async function createRandomEvent(gate) {
-  const now = new Date();
+async function createRandomEvent(gate, now = new Date()) {
   const parkType = pickParkType();
 
   const event = await ParkingEvent.create({
@@ -73,7 +81,7 @@ async function createRandomEvent(gate) {
     parkType,
     paymentStatus: pickPaymentStatus(parkType, now),
     mobilityCardValid: pickMobilityCardValid(parkType),
-    eventTime: now,
+    eventTime: new Date(now.getTime() - Math.random() * config.TICK_MINUTES * 60000),
     durationMinutes: pickDurationMinutes(),
   });
 
@@ -85,16 +93,24 @@ async function createRandomEvent(gate) {
   return { event, violationTypes };
 }
 
-async function runGeneratorTick() {
+async function runGeneratorTick(now = new Date()) {
   const gates = await GateArea.findAll();
-  if (gates.length === 0) return [];
-
-  const gate = gates[Math.floor(Math.random() * gates.length)];
-  const eventCount = pickEventCount(new Date());
+  const { weekday, hour, minute, dateKey } = nzParts(now);
+  const noise = dayNoise(dateKey);
 
   const results = [];
-  for (let i = 0; i < eventCount; i++) {
-    results.push(await createRandomEvent(gate));
+  for (const gate of gates) {
+    const model = createGateModel(gate);
+    const mean = model.arrivalsPerMinute(weekday, hour * 60 + minute) * noise * config.TICK_MINUTES;
+
+    // A full car park turns cars away.
+    const { occupied } = await getGateOccupancy(gate.id);
+    const room = Math.max(gate.totalParks - occupied, 0);
+    const count = Math.min(sampleEventCount(mean), room);
+
+    for (let i = 0; i < count; i++) {
+      results.push(await createRandomEvent(gate, now));
+    }
   }
   return results;
 }
@@ -112,6 +128,6 @@ module.exports = {
   startDataGenerator,
   runGeneratorTick,
   generateValidPlateNumber,
-  pickEventCount,
+  sampleEventCount,
   PLATE_REGEX,
 };
