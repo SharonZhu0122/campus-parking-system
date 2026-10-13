@@ -239,24 +239,41 @@ function PredictionsPage({ onBack, backLabel = 'Back to occupancy' }) {
       .catch((err) => setError(err.message));
   }, []);
 
-  const load = useCallback(() => {
-    if (!selectedGateId) return;
-    setLoading(true);
-    Promise.all([getBusyness(selectedGateId), getPredictions(selectedGateId)])
-      .then(([busyResult, predictionResult]) => {
-        setBusy(busyResult);
-        setData(predictionResult);
-        setSelectedDay((day) => (day === null ? busyResult.now.weekday : day));
-        setLastUpdated(new Date());
-        setError('');
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [selectedGateId]);
+  const load = useCallback(
+    ({ silent = false } = {}) => {
+      if (!selectedGateId) return;
+      if (!silent) setLoading(true);
+      // The busy-times view does not depend on the forecast, so one failing
+      // does not hide the other.
+      Promise.allSettled([getBusyness(selectedGateId), getPredictions(selectedGateId)])
+        .then(([busyResult, predictionResult]) => {
+          if (busyResult.status === 'fulfilled') {
+            setBusy(busyResult.value);
+            setSelectedDay((day) => (day === null ? busyResult.value.now.weekday : day));
+            setLastUpdated(new Date());
+            setError('');
+          } else {
+            setError('Could not load busy times. Trying again shortly.');
+          }
+          if (predictionResult.status === 'fulfilled') setData(predictionResult.value);
+        })
+        .finally(() => setLoading(false));
+    },
+    [selectedGateId]
+  );
 
   useEffect(() => {
     load();
   }, [load]);
+
+  // Keep the page current, and try again quickly after a failure (for example
+  // while the server restarts).
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (!document.hidden) load({ silent: true });
+    }, error ? 5000 : 30000);
+    return () => clearInterval(id);
+  }, [load, error]);
 
   const now = busy?.now;
   const dayHours = busy && selectedDay !== null ? busy.typicalWeek.find((d) => d.weekday === selectedDay).hours : [];
@@ -302,7 +319,7 @@ function PredictionsPage({ onBack, backLabel = 'Back to occupancy' }) {
                 ))}
               </select>
             </div>
-            <button type="button" className="link-button" onClick={load} disabled={loading}>
+            <button type="button" className="link-button" onClick={() => load()} disabled={loading}>
               {loading ? 'Refreshing...' : 'Refresh'}
             </button>
             {lastUpdated && <span className="pred-updated">Updated {lastUpdated.toLocaleTimeString()}</span>}
