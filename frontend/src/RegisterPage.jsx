@@ -1,13 +1,21 @@
 import { useState } from 'react';
 import { register } from './api';
 import AuthLogo from './AuthLogo';
+import FormField from './components/FormField';
+
+const EMPTY_FORM = { username: '', password: '', plateNumber: '', contactEmail: '', phoneNumber: '' };
+
+// The fields, in order, with how each one is shown.
+const FIELDS = [
+  { name: 'username', id: 'reg-username', label: 'Username', type: 'text' },
+  { name: 'password', id: 'reg-password', label: 'Password', type: 'password', minLength: 6, placeholder: 'At least 6 characters' },
+  { name: 'plateNumber', id: 'reg-plate', label: 'Vehicle plate number', type: 'text', maxLength: 8, placeholder: 'e.g. ABC123' },
+  { name: 'contactEmail', id: 'reg-email', label: 'Contact email', type: 'email', placeholder: 'For violation notifications' },
+  { name: 'phoneNumber', id: 'reg-phone', label: 'Contact phone number', type: 'tel', placeholder: 'e.g. 021 123 4567' },
+];
 
 function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [plateNumber, setPlateNumber] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [values, setValues] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -16,8 +24,8 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
     setError('');
     setLoading(true);
     try {
-      await register(username, password, plateNumber, contactEmail, phoneNumber);
-      onRegisterSuccess(username);
+      await register(values.username, values.password, values.plateNumber, values.contactEmail, values.phoneNumber);
+      onRegisterSuccess(values.username);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -37,62 +45,16 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
           Register your vehicle to check whether it has any violations, and so parking staff can contact you if it
           does. You don&apos;t need an account to see car park availability.
         </p>
-        <div className="field">
-          <label htmlFor="reg-username">Username</label>
-          <input
-            id="reg-username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+        {FIELDS.map(({ name, label, ...inputProps }) => (
+          <FormField
+            key={name}
+            label={label}
+            value={values[name]}
+            onChange={(e) => setValues({ ...values, [name]: e.target.value })}
             required
+            {...inputProps}
           />
-        </div>
-        <div className="field">
-          <label htmlFor="reg-password">Password</label>
-          <input
-            id="reg-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            minLength={6}
-            placeholder="At least 6 characters"
-            required
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="reg-plate">Vehicle plate number</label>
-          <input
-            id="reg-plate"
-            type="text"
-            value={plateNumber}
-            onChange={(e) => setPlateNumber(e.target.value)}
-            placeholder="e.g. ABC123"
-            maxLength={8}
-            required
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="reg-email">Contact email</label>
-          <input
-            id="reg-email"
-            type="email"
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-            placeholder="For violation notifications"
-            required
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="reg-phone">Contact phone number</label>
-          <input
-            id="reg-phone"
-            type="tel"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="e.g. 021 123 4567"
-            required
-          />
-        </div>
+        ))}
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={loading}>
           {loading ? 'Registering...' : 'Register'}
