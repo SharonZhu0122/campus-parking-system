@@ -7,3 +7,4 @@ build/
 **/.claude/launch.json
 *.mp4
 *.mov
+submission/
