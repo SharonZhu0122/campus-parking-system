@@ -5,3 +5,5 @@ dist/
 build/
 *.log
 **/.claude/launch.json
+*.mp4
+*.mov
