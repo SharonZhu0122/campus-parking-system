@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" font-family="Arial, Helvetica, sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#555"/></marker></defs>
+  <rect width="1000" height="560" fill="#fff"/>
+  <style>.t{font-size:13px;fill:#222}.h{font-size:14px;font-weight:700;fill:#fff}.k{font-size:12px;fill:#555}</style>
+
+  <rect x="30" y="30" width="250" height="215" rx="6" fill="#fff" stroke="#3b73b9"/><rect x="30" y="30" width="250" height="28" rx="6" fill="#3b73b9"/><text class="h" x="42" y="49">Users</text>
+  <text class="t" x="42" y="82">id (key)</text><text class="t" x="42" y="102">username (unique)</text><text class="t" x="42" y="122">passwordHash (bcrypt)</text><text class="t" x="42" y="142">role: user or admin</text><text class="t" x="42" y="162">plateNumber (unique)</text><text class="t" x="42" y="182">contactEmail</text><text class="t" x="42" y="202">phoneNumber</text>
+
+  <rect x="30" y="300" width="250" height="140" rx="6" fill="#fff" stroke="#3b73b9"/><rect x="30" y="300" width="250" height="28" rx="6" fill="#3b73b9"/><text class="h" x="42" y="319">PasswordResets</text>
+  <text class="t" x="42" y="352">id (key)</text><text class="t" x="42" y="372">userId (links to Users)</text><text class="t" x="42" y="392">tokenHash (SHA-256)</text><text class="t" x="42" y="412">expiresAt, usedAt</text>
+
+  <rect x="380" y="30" width="240" height="120" rx="6" fill="#fff" stroke="#2f8f64"/><rect x="380" y="30" width="240" height="28" rx="6" fill="#2f8f64"/><text class="h" x="392" y="49">GateAreas</text>
+  <text class="t" x="392" y="82">id (key)</text><text class="t" x="392" y="102">name (Gate 1, 2b, 3A, 3B, 10)</text><text class="t" x="392" y="122">totalParks (real capacity)</text>
+
+  <rect x="380" y="210" width="240" height="230" rx="6" fill="#fff" stroke="#2f8f64"/><rect x="380" y="210" width="240" height="28" rx="6" fill="#2f8f64"/><text class="h" x="392" y="229">ParkingEvents</text>
+  <text class="t" x="392" y="262">id (key)</text><text class="t" x="392" y="282">gateAreaId (links to GateAreas)</text><text class="t" x="392" y="302">plateNumber</text><text class="t" x="392" y="322">parkType: standard, reserved,</text><text class="t" x="392" y="340">mobility, motorbike</text><text class="t" x="392" y="360">paymentStatus: paid, unpaid,</text><text class="t" x="392" y="378">not_required</text><text class="t" x="392" y="398">mobilityCardValid</text><text class="t" x="392" y="418">eventTime, durationMinutes</text>
+
+  <rect x="720" y="130" width="250" height="330" rx="6" fill="#fff" stroke="#aa0000"/><rect x="720" y="130" width="250" height="28" rx="6" fill="#aa0000"/><text class="h" x="732" y="149">Violations</text>
+  <text class="t" x="732" y="182">id (key)</text><text class="t" x="732" y="202">parkingEventId (links to</text><text class="t" x="732" y="220">ParkingEvents)</text><text class="t" x="732" y="240">violationType (3 kinds)</text><text class="t" x="732" y="260">resolved, resolvedAt, resolvedBy</text><text class="t" x="732" y="280">resolutionType: ticket_issued,</text><text class="t" x="732" y="298">false_positive, other</text><text class="t" x="732" y="318">notificationSent, notifiedContact</text><text class="t" x="732" y="338">source: automatic or manual</text><text class="t" x="732" y="358">createdBy, note</text><text class="t" x="732" y="378">editedBy, editedAt</text>
+
+  <rect x="720" y="490" width="250" height="55" rx="6" fill="#fff" stroke="#888"/><rect x="720" y="490" width="250" height="26" rx="6" fill="#888"/><text class="h" x="732" y="508">Inquiries</text><text class="t" x="732" y="536">id, question, email (visitor questions)</text>
+
+  <line x1="500" y1="150" x2="500" y2="210" stroke="#555" stroke-width="2" marker-end="url(#a)"/><text class="k" x="508" y="185">1 gate has many events</text>
+  <line x1="620" y1="300" x2="720" y2="260" stroke="#555" stroke-width="2" marker-end="url(#a)"/><text class="k" x="630" y="312">1 event,</text><text class="k" x="630" y="328">many violations</text>
+  <line x1="155" y1="245" x2="155" y2="300" stroke="#555" stroke-width="2" marker-end="url(#a)"/><text class="k" x="165" y="278">1 user, many reset links</text>
+  <path d="M280 162 H340 V300 H380" fill="none" stroke="#999" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text class="k" x="334" y="228" text-anchor="end">matched by</text><text class="k" x="334" y="244" text-anchor="end">plate number</text>
+  <text class="k" x="30" y="480">Dashed line: a user is linked to parking records only through the plate number,</text><text class="k" x="30" y="498">so a driver can change plates and the history follows the new plate.</text>
+</svg>

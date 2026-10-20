@@ -35,20 +35,20 @@ Bugs found while building the Campus Parking System, how each one was found, wha
 
 | ID | Date | What went wrong | Cause | Fix | Checked |
 |---|---|---|---|---|---|
-| B21 | 10 Oct | Two accounts could register the same plate, and wrong emails or phone numbers were accepted. | No uniqueness or format checks. | A unique index, format checks, and 409 for duplicates. | Tests (`authRoutes.test.js`) |
-| B22 | 4 Oct | The assistant failed for new users. | The model I first chose (`gemini-2.5-flash-lite`) was no longer offered. | Found a working model by a real test call and made it a setting. | A live call |
-| B23 | 4 Oct | Risk found at design time: a chatbot can make up answers. | Nothing limited what it could say. | It answers only from a fact sheet, never guesses prices, and is rate limited. | Tests (`assistantRoutes.test.js`) |
-| B24 | 13 Oct | The assistant said it did not know the fees. | The fact sheet had no prices. | Added the official fees from the university website ($3 a day, $9 a week, $90 a trimester). | A live call |
+| B20 | 10 Oct | Two accounts could register the same plate, and wrong emails or phone numbers were accepted. | No uniqueness or format checks. | A unique index, format checks, and 409 for duplicates. | Tests (`authRoutes.test.js`) |
+| B21 | 4 Oct | The assistant failed for new users. | The model I first chose (`gemini-2.5-flash-lite`) was no longer offered. | Found a working model by a real test call and made it a setting. | A live call |
+| B22 | 4 Oct | Risk found at design time: a chatbot can make up answers. | Nothing limited what it could say. | It answers only from a fact sheet, never guesses prices, and is rate limited. | Tests (`assistantRoutes.test.js`) |
+| B23 | 13 Oct | The assistant said it did not know the fees. | The fact sheet had no prices. | Added the official fees from the university website ($3 a day, $9 a week, $90 a trimester). | A live call |
 
 ## D. Testing and deployment
 
 | ID | Date | What went wrong | Cause | Fix | Checked |
 |---|---|---|---|---|---|
-| B25 | 17 Sep | The site dropped offline several times. | It was not on permanent hosting. | Frontend on Vercel, API and database on Railway. | By hand |
-| B26 | Oct | A stray Vercel project was created. | I deployed from the wrong folder. | Deleted it, and always deploy with `--cwd`. | `vercel project ls` |
-| B27 | 4 Oct | The new setting was not used after setting it on Railway. | The variable was staged, not deployed. | Deployed it from the dashboard. | A live call |
-| B28 | 13 Oct | Tests sometimes failed by themselves. | Test files ran at the same time and changed each other's rows in one database. | `npm test` runs one file at a time. | Nine full runs in a row |
-| B29 | 20 Oct | The live site had no data. | The free Railway trial ended and the API and database were switched off. | Not fixed by code. The system runs locally from the README, and screenshots were taken from a local run. | `railway status` |
+| B24 | 17 Sep | The site dropped offline several times. | Free hosting has limits and can sleep. | Frontend on Vercel, API and database on Railway. | By hand |
+| B25 | Oct | A stray Vercel project was created. | I deployed from the wrong folder. | Deleted it, and always deploy with `--cwd`. | `vercel project ls` |
+| B26 | 4 Oct | The new setting was not used after setting it on Railway. | The variable was staged, not deployed. | Deployed it from the dashboard. | A live call |
+| B27 | 13 Oct | Tests sometimes failed by themselves. | Test files ran at the same time and changed each other's rows in one database. | `npm test` runs one file at a time. | Nine full runs in a row |
+| B28 | 20 Oct | The live site had no data. | The free Railway trial ended and the API and database were switched off. | Not fixed by code. The system runs locally from the README, and screenshots were taken from a local run. | `railway status` |
 
 ## E. Found by the security tests (21 Oct)
 
