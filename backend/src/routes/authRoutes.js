@@ -2,9 +2,13 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
-const { PLATE_PATTERN, EMAIL_PATTERN, PHONE_PATTERN, normalisePlate } = require('../utils/validation');
+const { PLATE_PATTERN, EMAIL_PATTERN, PHONE_PATTERN, MIN_PASSWORD_LENGTH, normalisePlate } = require('../utils/validation');
+const { createLimiter } = require('../utils/rateLimit');
 
 const router = express.Router();
+
+// Slows down anyone guessing passwords: 10 wrong tries every 15 minutes per address.
+const loginLimiter = createLimiter(10, 15 * 60 * 1000);
 
 router.post('/register', async (req, res) => {
   const { username, password, plateNumber, contactEmail, phoneNumber } = req.body;
@@ -14,6 +18,9 @@ router.post('/register', async (req, res) => {
     });
   }
 
+  if (String(password).length < MIN_PASSWORD_LENGTH) {
+    return res.status(400).json({ error: `password must be at least ${MIN_PASSWORD_LENGTH} characters` });
+  }
   const plate = normalisePlate(plateNumber);
   if (!PLATE_PATTERN.test(plate)) {
     return res.status(400).json({ error: 'plate number must be 2 to 6 letters or digits' });
@@ -49,14 +56,17 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ where: { username } });
-  if (!user) {
-    return res.status(401).json({ error: 'invalid username or password' });
+  if (loginLimiter.blocked(req.ip)) {
+    return res.status(429).json({ error: 'too many login attempts, please try again later' });
   }
-
-  const passwordMatches = await bcrypt.compare(password, user.passwordHash);
+  const { username, password } = req.body;
+  if (typeof username !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: 'username and password are required' });
+  }
+  const user = await User.findOne({ where: { username } });
+  const passwordMatches = user && (await bcrypt.compare(password, user.passwordHash));
   if (!passwordMatches) {
+    loginLimiter.record(req.ip);
     return res.status(401).json({ error: 'invalid username or password' });
   }
 
@@ -70,3 +80,4 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.loginLimiter = loginLimiter;

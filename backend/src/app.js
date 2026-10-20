@@ -8,12 +8,19 @@ const inquiryRoutes = require('./routes/inquiryRoutes');
 const assistantRoutes = require('./routes/assistantRoutes');
 const alertRoutes = require('./routes/alertRoutes');
 const meRoutes = require('./routes/meRoutes');
+const { corsOptions } = require('./config/cors');
+const { notFound, errorHandler } = require('./middleware/errorHandling');
 const passwordResetRoutes = require('./routes/passwordResetRoutes');
 
 const app = express();
+app.disable('x-powered-by');
 app.set('trust proxy', 1);
-app.use(cors());
-app.use(express.json());
+app.use(cors(corsOptions()));
+app.use((req, res, next) => {
+  res.set('X-Content-Type-Options', 'nosniff');
+  next();
+});
+app.use(express.json({ limit: '100kb' }));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
@@ -27,5 +34,8 @@ app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/assistant', assistantRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/me', meRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 module.exports = app;

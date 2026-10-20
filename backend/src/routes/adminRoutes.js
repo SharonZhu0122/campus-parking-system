@@ -8,6 +8,13 @@ const { enforceAllCapacities } = require('../services/occupancy');
 
 const router = express.Router();
 
+router.param('id', (req, res, next, id) => {
+  if (!/^\d+$/.test(id)) {
+    return res.status(404).json({ error: 'violation not found' });
+  }
+  next();
+});
+
 const DEFAULT_LIST_LIMIT = 100;
 const MAX_LIST_LIMIT = 500;
 const MAX_NOTE_LENGTH = 500;

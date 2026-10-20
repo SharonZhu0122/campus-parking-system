@@ -10,14 +10,26 @@ const {
 
 const router = express.Router();
 
+// Ids are whole numbers. MySQL would quietly read "1abc" as 1, so reject
+// anything else before it reaches the database.
+router.param('id', (req, res, next, id) => {
+  if (!/^\d+$/.test(id)) {
+    return res.status(404).json({ error: 'gate not found' });
+  }
+  next();
+});
+
 router.get('/', async (req, res) => {
   const gates = await GateArea.findAll();
   res.json(gates);
 });
 
 router.get('/:id/occupancy', async (req, res) => {
-  const occupancy = await getGateOccupancy(req.params.id);
-  res.json(occupancy);
+  const gate = await GateArea.findByPk(req.params.id);
+  if (!gate) {
+    return res.status(404).json({ error: 'gate not found' });
+  }
+  res.json(await getGateOccupancy(gate.id));
 });
 
 router.get('/:id/busyness', async (req, res) => {

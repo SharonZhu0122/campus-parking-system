@@ -13,6 +13,15 @@ function createLimiter(limit, windowMs) {
       hits.set(key, recent);
       return true;
     },
+    // For counting only the attempts that failed: ask first, record after.
+    blocked(key, now = Date.now()) {
+      const recent = (hits.get(key) || []).filter((t) => now - t < windowMs);
+      hits.set(key, recent);
+      return recent.length >= limit;
+    },
+    record(key, now = Date.now()) {
+      hits.set(key, [...(hits.get(key) || []), now]);
+    },
     clear() {
       hits.clear();
     },

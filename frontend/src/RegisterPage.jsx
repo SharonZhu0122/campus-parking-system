@@ -54,6 +54,8 @@ function RegisterPage({ onRegisterSuccess, onSwitchToLogin, onBack }) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            minLength={6}
+            placeholder="At least 6 characters"
             required
           />
         </div>
