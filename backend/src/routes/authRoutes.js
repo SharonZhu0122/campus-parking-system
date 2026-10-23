@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
-const { PLATE_PATTERN, EMAIL_PATTERN, PHONE_PATTERN, MIN_PASSWORD_LENGTH, normalisePlate } = require('../utils/validation');
+const { USERNAME_PATTERN, PLATE_PATTERN, EMAIL_PATTERN, PHONE_PATTERN, MIN_PASSWORD_LENGTH, normalisePlate } = require('../utils/validation');
 const { createLimiter } = require('../utils/rateLimit');
 
 const router = express.Router();
@@ -16,6 +16,10 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({
       error: 'username, password, plateNumber, contactEmail and phoneNumber are required',
     });
+  }
+
+  if (typeof username !== 'string' || !USERNAME_PATTERN.test(username)) {
+    return res.status(400).json({ error: 'username must contain only English letters (A-Z, a-z) and digits (0-9)' });
   }
 
   if (String(password).length < MIN_PASSWORD_LENGTH) {

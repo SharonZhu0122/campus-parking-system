@@ -7,7 +7,15 @@ const EMPTY_FORM = { username: '', password: '', plateNumber: '', contactEmail: 
 
 // The fields, in order, with how each one is shown.
 const FIELDS = [
-  { name: 'username', id: 'reg-username', label: 'Username', type: 'text' },
+  {
+    name: 'username',
+    id: 'reg-username',
+    label: 'Username (English letters and numbers only)',
+    type: 'text',
+    pattern: '[A-Za-z0-9]+',
+    title: 'Use only English letters (A-Z, a-z) and digits (0-9)',
+    placeholder: 'e.g. Sharon123',
+  },
   { name: 'password', id: 'reg-password', label: 'Password', type: 'password', minLength: 6, placeholder: 'At least 6 characters' },
   { name: 'plateNumber', id: 'reg-plate', label: 'Vehicle plate number', type: 'text', maxLength: 8, placeholder: 'e.g. ABC123' },
   { name: 'contactEmail', id: 'reg-email', label: 'Contact email', type: 'email', placeholder: 'For violation notifications' },

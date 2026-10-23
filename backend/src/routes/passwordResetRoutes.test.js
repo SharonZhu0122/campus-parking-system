@@ -7,7 +7,7 @@ const { limiters } = require('./passwordResetRoutes');
 const { sequelize, User, PasswordReset } = require('../models');
 
 const stamp = Date.now().toString(36).toUpperCase().slice(-4);
-const username = `pw_${stamp}`;
+const username = `pw${stamp}`;
 const email = `pw_${stamp}@example.com`;
 let userId;
 

@@ -1,16 +1,47 @@
-# React + Vite
+# Campus Parking frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React frontend for the Campus Parking Availability and Violation Monitoring System. It provides gate occupancy and maps, busy times and forecasts, parking questions, driver account pages, and admin violation management.
 
-Currently, two official plugins are available:
+See the [project README](../README.md) for backend setup, database configuration, API routes and project limitations. Parking data is simulated.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Run locally
 
-## React Compiler
+Use Node.js 20.19+ within the 20.x release line, or Node.js 22.12+. Start the backend using the project README, then open another terminal in the project root:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Expanding the Oxlint configuration
+Vite normally serves the frontend at `http://localhost:5173`. Check the terminal for the actual address if that port is occupied.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## API configuration
+
+The default API address is `http://localhost:4000`. To override it, set the following in `frontend/.env.local`:
+
+```dotenv
+VITE_API_BASE=http://localhost:4000
+```
+
+Restart Vite after changing this file. The backend CORS configuration must allow the frontend origin. For a deployed build, set `VITE_API_BASE` before building; Vite embeds it in the generated files.
+
+## Checks and build
+
+Run from `frontend/`:
+
+```bash
+npm run lint
+npm run build
+npm run preview
+```
+
+`lint` runs Oxlint, `build` writes the production files to `dist/`, and `preview` serves that build locally. Previewing the frontend still requires a running backend for API features. The frontend currently has no automated test script; backend tests are documented in the project README.
+
+## Source layout
+
+- `src/App.jsx`: page selection and login-related UI state.
+- `src/api.js`: requests to the backend API.
+- `src/occupancy/`, `src/busytimes/`, `src/admin/`, `src/vehicle/`: feature components and data hooks.
+- `src/account/`, `src/faq/`: account forms and parking-question components.
+- `src/App.css` and `src/index.css`: application and base styles.

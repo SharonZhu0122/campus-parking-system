@@ -6,7 +6,7 @@ const stamp = Date.now().toString(36);
 const createdUsernames = [];
 
 function newUser(overrides = {}) {
-  const username = `t_${stamp}_${createdUsernames.length}`;
+  const username = `t${stamp}n${createdUsernames.length}`;
   createdUsernames.push(username);
   return {
     username,

@@ -7,7 +7,7 @@ const { sequelize, User, GateArea, Inquiry } = require('../models');
 
 const stamp = Date.now().toString(36).toUpperCase().slice(-4);
 const PASSWORD = 'SecurePass123';
-const names = { user: `sec_user_${stamp}`, admin: `sec_admin_${stamp}`, escalate: `sec_esc_${stamp}` };
+const names = { user: `secUser${stamp}`, admin: `secAdmin${stamp}`, escalate: `secEsc${stamp}` };
 let userToken;
 let adminToken;
 
@@ -51,7 +51,7 @@ describe('injection attempts', () => {
 
   test('SQL in the plate number is rejected by validation', async () => {
     const res = await request(app).post('/api/register').send({
-      username: `sec_inj_${stamp}`,
+      username: `secInj${stamp}`,
       password: PASSWORD,
       plateNumber: "AB1'; DROP TABLE Users;--",
       contactEmail: 'a@example.com',
@@ -201,7 +201,7 @@ describe('guessing passwords', () => {
 
   test('a password shorter than six characters cannot be registered', async () => {
     const res = await request(app).post('/api/register').send({
-      username: `sec_short_${stamp}`,
+      username: `secShort${stamp}`,
       password: '12345',
       plateNumber: `SS${stamp}`,
       contactEmail: 'short@example.com',

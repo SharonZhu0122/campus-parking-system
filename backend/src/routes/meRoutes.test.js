@@ -5,7 +5,7 @@ const { sequelize, User, ParkingEvent, Violation } = require('../models');
 const stamp = Date.now().toString(36).toUpperCase().slice(-4);
 const plateA = `MA${stamp}`;
 const plateB = `MB${stamp}`;
-const usernames = [`me_a_${stamp}`, `me_b_${stamp}`, `me_c_${stamp}`, `me_d_${stamp}`, `me_e_${stamp}`];
+const usernames = [`meA${stamp}`, `meB${stamp}`, `meC${stamp}`, `meD${stamp}`, `meE${stamp}`];
 const events = [];
 
 async function register(username, plateNumber) {
